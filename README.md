@@ -44,6 +44,7 @@
 - [Instalasi](#-instalasi)
 - [Konfigurasi Database](#-konfigurasi-database)
 - [Akun Default](#-akun-default)
+- [Dokumentasi](#-dokumentasi)
 - [Changelog](#-changelog)
 - [Developer](#-developer)
 
@@ -279,6 +280,33 @@ Setelah menjalankan seeder, akun berikut tersedia:
 | **Petugas** | `petugas` | `petugas123` |
 
 > ⚠️ Segera ganti password setelah pertama kali login di production.
+
+<br/>
+
+---
+
+## Dokumentasi
+
+Dokumentasi lengkap proyek tersedia di repository terpisah:
+
+**[📚 github.com/OmmniDevv/dokumentasi-LuxBid](https://github.com/OmmniDevv/dokumentasi-LuxBid)**
+
+### 📄 Dokumen
+
+| Dokumen | Deskripsi |
+|---------|-----------|
+| [📋 SRS LuxBid v1.2.0](https://github.com/OmmniDevv/dokumentasi-LuxBid/tree/main/dokumen) | Software Requirements Specification — kebutuhan fungsional & non-fungsional sistem |
+| [🎤 Script Presentasi](https://github.com/OmmniDevv/dokumentasi-LuxBid/tree/main/dokumen) | Naskah presentasi lengkap proyek LuxBid |
+
+### 🗂️ Diagram UML
+
+| Diagram | Deskripsi |
+|---------|-----------|
+| [📌 Use Case Diagram](https://github.com/OmmniDevv/dokumentasi-LuxBid/tree/main/uml) | Interaksi aktor (Masyarakat, Petugas, Administrator) dengan sistem |
+| [🗃️ Entity Relationship Diagram](https://github.com/OmmniDevv/dokumentasi-LuxBid/tree/main/uml) | Relasi antar entitas database |
+| [🧩 Class Diagram](https://github.com/OmmniDevv/dokumentasi-LuxBid/tree/main/uml) | Struktur kelas dan hubungan antar model |
+| [🔄 Activity Diagrams](https://github.com/OmmniDevv/dokumentasi-LuxBid/tree/main/uml) | Alur aktivitas proses bisnis utama |
+| [⚡ Sequence Diagrams](https://github.com/OmmniDevv/dokumentasi-LuxBid/tree/main/uml) | Urutan interaksi antar komponen sistem |
 
 <br/>
 
