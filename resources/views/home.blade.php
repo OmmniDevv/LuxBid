@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <script>(function(){var d=localStorage.getItem('theme')==='dark';document.documentElement.setAttribute('data-theme',d?'dark':'light');})()</script>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Lux Bid</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -23,6 +23,17 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
 .ln-links a:hover{color:var(--ink);background:var(--cream-d)}
 .ln-cta{background:var(--ink)!important;color:var(--cream)!important;padding:.45rem 1.2rem!important}
 .ln-cta:hover{background:var(--gold)!important;color:var(--ink)!important}
+.ln-burger{display:none;background:none;border:none;cursor:pointer;padding:.4rem;color:var(--ink);font-size:1.2rem;line-height:1}
+/* Mobile menu — elemen terpisah di luar nav */
+#ln-links{list-style:none;position:fixed;top:64px;left:0;right:0;bottom:0;background:rgba(250,247,240,.98);backdrop-filter:blur(14px);z-index:9999;padding:1.5rem;gap:.35rem;flex-direction:column;align-items:stretch;border-top:1px solid var(--gold-ln);overflow-y:auto}
+#ln-links li{width:100%}
+#ln-links a{display:block;padding:.75rem 1rem;border-radius:var(--rs);font-size:.95rem;color:var(--ink);border:1px solid transparent;text-decoration:none}
+#ln-links a:hover{background:var(--cream-d);border-color:var(--gold-ln)}
+#ln-links .ln-cta{background:var(--ink)!important;color:var(--cream)!important;text-align:center;margin-top:.25rem}
+[data-theme="dark"] #ln-links{background:rgba(0,0,0,.97);border-top-color:rgba(200,155,60,.2)}
+[data-theme="dark"] #ln-links a{color:#fff}
+[data-theme="dark"] #ln-links a:hover{background:#1a1a1a;border-color:rgba(200,155,60,.2)}
+[data-theme="dark"] #ln-links .ln-cta{background:#c89b3c!important;color:#000!important}
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:7rem 1.5rem 5rem;position:relative}
 .hero::before{content:'';position:absolute;width:640px;height:640px;border-radius:50%;border:1px solid var(--gold-ln);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
 .badge{display:inline-flex;align-items:center;gap:.45rem;background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:100px;padding:.3rem 1rem;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:1.6rem}
@@ -121,6 +132,23 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
 .c-adm .cbtn{background:var(--gold);color:var(--ink)}.c-adm .cbtn:hover{background:var(--gold-l);text-decoration:none;color:var(--ink)}
 .reg-link{text-align:center;margin-top:1rem;font-size:.78rem;color:var(--ink-m)}
 .reg-link a{color:var(--gold);font-weight:600;text-decoration:none}
+/* CTA Lelang Section */
+#cta-lelang{background:var(--ink);position:relative;overflow:hidden}
+#cta-lelang::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;border:1px solid rgba(184,134,11,.15);top:-150px;right:-100px;pointer-events:none}
+#cta-lelang::after{content:'';position:absolute;width:300px;height:300px;border-radius:50%;border:1px solid rgba(184,134,11,.1);bottom:-80px;left:60px;pointer-events:none}
+.cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.cta-steps{display:flex;flex-direction:column;gap:1.1rem;margin-top:2rem}
+.cta-step{display:flex;align-items:flex-start;gap:1rem}
+.cta-step-n{width:32px;height:32px;min-width:32px;border-radius:50%;background:rgba(184,134,11,.15);border:1px solid rgba(184,134,11,.3);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:var(--gold-l)}
+.cta-step-body h4{font-size:.88rem;font-weight:600;color:var(--cream);margin-bottom:.2rem}
+.cta-step-body p{font-size:.78rem;color:rgba(250,247,240,.4);line-height:1.6}
+.cta-card{background:rgba(250,247,240,.04);border:1px solid rgba(184,134,11,.2);border-radius:16px;padding:2.5rem}
+.cta-perks{display:flex;flex-direction:column;gap:.85rem;margin:1.75rem 0}
+.cta-perk{display:flex;align-items:center;gap:.75rem;font-size:.85rem;color:rgba(250,247,240,.65)}
+.cta-perk i{width:28px;height:28px;background:rgba(184,134,11,.12);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--gold-l);font-size:.75rem;flex-shrink:0}
+.btn-cta-gold{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.9rem;background:var(--gold);color:var(--ink);border-radius:100px;font-size:.92rem;font-weight:700;text-decoration:none;transition:all var(--ease)}
+.btn-cta-gold:hover{background:var(--gold-l);transform:translateY(-2px);text-decoration:none;color:var(--ink)}
+@media(max-width:768px){.cta-grid{grid-template-columns:1fr}}
 .footer{background:var(--ink);padding:2.8rem 3rem 1.8rem}
 .fi{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-start;gap:2rem;flex-wrap:wrap}
 .flogo{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--cream);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
@@ -132,7 +160,14 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
 .flinks a:hover{color:var(--gold-l)}
 .fbot{max-width:1080px;margin:2rem auto 0;padding-top:1.4rem;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;font-size:.72rem;color:rgba(250,247,240,.2);flex-wrap:wrap;gap:.4rem}
 @keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
-@media(max-width:768px){.ln{padding:0 1.25rem}.ln-links{display:none}.stat{padding:1.8rem 2rem}.inner{padding:4rem 1.25rem}.ftgrid{grid-template-columns:1fr}.mock{display:none}.cards{grid-template-columns:1fr}.footer{padding:2rem 1.25rem 1.5rem}}
+@media(max-width:768px){.ln{padding:0 1.25rem}.ln-links-desktop{display:none!important}.ln-burger{display:flex}.stat{padding:1.8rem 2rem}.inner{padding:4rem 1.25rem}.ftgrid{grid-template-columns:1fr}.mock{display:none}.cards{grid-template-columns:1fr}.footer{padding:2rem 1.25rem 1.5rem}
+.h1{font-size:clamp(1.8rem,8vw,2.8rem)}.hsub{font-size:.88rem}.btn-p,.btn-o{padding:.7rem 1.4rem;font-size:.85rem}.ttl{font-size:clamp(1.4rem,5vw,2rem)}.stat-n{font-size:1.6rem}.step-n{font-size:2.5rem}.hero{padding:5rem 1.25rem 3rem}}
+@media(min-width:769px){#ln-links{display:none!important}}
+.ln-links.mobile-open{display:flex;flex-direction:column;align-items:stretch;position:fixed;top:64px;left:0;right:0;bottom:0;background:rgba(250,247,240,.98);backdrop-filter:blur(14px);z-index:201;padding:1.5rem;gap:.35rem;border-top:1px solid var(--gold-ln);overflow-y:auto}
+.ln-links.mobile-open li{width:100%}
+.ln-links.mobile-open a{display:block;padding:.75rem 1rem;border-radius:var(--rs);font-size:.95rem;color:var(--ink);border:1px solid transparent}
+.ln-links.mobile-open a:hover{background:var(--cream-d);border-color:var(--gold-ln)}
+.ln-links.mobile-open .ln-cta{background:var(--ink)!important;color:var(--cream)!important;text-align:center;margin-top:.25rem}
 </style>
 </head>
 <body>
@@ -144,7 +179,7 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
     Lux<span>Bid</span>
   </a>
   <div style="display:flex;align-items:center;gap:.25rem">
-    <ul class="ln-links">
+    <ul class="ln-links ln-links-desktop">
       <li><a href="#ck">Cara Kerja</a></li>
       <li><a href="#lelang">Lelang Aktif</a></li>
       <li><a href="#ft">Fitur</a></li>
@@ -153,12 +188,29 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
         <li><a href="{{ route('logout') }}" class="ln-cta">Logout</a></li>
       @else
         <li><a href="{{ route('login.masyarakat') }}">Login</a></li>
+        <li><a href="/login-admin" style="font-size:.78rem;font-weight:500;color:var(--ink-m);border:1.5px solid var(--cream-dd);border-radius:100px;padding:.4rem .9rem;display:inline-flex;align-items:center;gap:.35rem;transition:all var(--ease)" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--cream-dd)';this.style.color='var(--ink-m)'"><i class="fas fa-user-shield" style="font-size:.7rem"></i> Login Staff</a></li>
         <li><a href="{{ route('daftar.masyarakat') }}" class="ln-cta">Daftar Gratis</a></li>
       @endif
     </ul>
+    <button class="ln-burger" id="ln-burger" aria-label="Menu" onclick="toggleMobileMenu()"><i class="fas fa-bars" id="ln-burger-icon"></i></button>
     <button class="dm-toggle" id="dm-toggle" title="Toggle dark mode"><i class="fas fa-moon"></i></button>
   </div>
 </nav>
+
+{{-- Mobile menu — di luar nav agar z-index tidak terbatas stacking context navbar --}}
+<ul class="ln-links" id="ln-links" style="display:none">
+  <li><a href="#ck">Cara Kerja</a></li>
+  <li><a href="#lelang">Lelang Aktif</a></li>
+  <li><a href="#ft">Fitur</a></li>
+  @if($is_logged_in)
+    <li><a href="{{ route('masyarakat.index') }}">👋 {{ session('username') }}</a></li>
+    <li><a href="{{ route('logout') }}" class="ln-cta">Logout</a></li>
+  @else
+    <li><a href="{{ route('login.masyarakat') }}">Login</a></li>
+    <li><a href="/login-admin" class="ln-cta" style="text-align:center"><i class="fas fa-user-shield" style="font-size:.7rem"></i> Login Staff</a></li>
+    <li><a href="{{ route('daftar.masyarakat') }}" class="ln-cta">Daftar Gratis</a></li>
+  @endif
+</ul>
 
 <section class="hero">
   <div class="badge">Platform Pelelangan Resmi &amp; Terpercaya</div>
@@ -168,6 +220,10 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
     <a href="{{ route('daftar.masyarakat') }}" class="btn-p">Daftar Sekarang &rarr;</a>
     <a href="#ck" class="btn-o">Pelajari Cara Kerja</a>
   </div>
+  <a href="/kontak" style="margin-top:1.5rem;display:inline-flex;align-items:center;gap:.45rem;font-size:.78rem;color:var(--ink-m);text-decoration:none;border:1px solid var(--gold-ln);border-radius:100px;padding:.35rem 1rem;background:var(--gold-p);transition:all var(--ease)" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--gold-ln)';this.style.color='var(--ink-m)'">
+    <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block"></span>
+    Punya barang untuk dilelang? <strong style="color:var(--gold)">Hubungi kami &rarr;</strong>
+  </a>
 </section>
 
 <div class="stats">
@@ -326,8 +382,8 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
     <span class="lbl rv">Akses Platform</span>
     <h2 class="ttl rv">Login</h2>
     <p class="dsc rv">Pilih jenis akun sesuai peran Anda untuk mulai menggunakan platform pelelangan daring.</p>
-    <div class="cards">
-      <div class="card-ld c-mas rv">
+    <div style="max-width:480px;margin:3rem auto 0">
+      <div class="card-ld c-mas rv" style="padding:2.75rem">
         <div class="card-ico">👤</div>
         <h3>Masyarakat / Peserta</h3>
         <p>Ikuti lelang, ajukan penawaran, dan menangkan barang incaran Anda.</p>
@@ -337,16 +393,55 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
         </ul>
         <a href="{{ route('login.masyarakat') }}" class="cbtn">Masuk sebagai Peserta &rarr;</a>
         <div class="reg-link">Belum punya akun? <a href="{{ route('daftar.masyarakat') }}">Daftar di sini</a></div>
+        <div style="margin-top:1rem;text-align:center">
+          <a href="/kontak" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.75rem;font-weight:600;color:var(--gold);background:rgba(184,134,11,.08);border:1px solid var(--gold-ln);border-radius:100px;padding:.35rem .9rem;text-decoration:none;transition:all var(--ease)" onmouseover="this.style.background='rgba(184,134,11,.15)'" onmouseout="this.style.background='rgba(184,134,11,.08)'">
+            <i class="fas fa-box-open" style="font-size:.65rem"></i> Ingin melelang barang? Hubungi kami
+          </a>
+        </div>
       </div>
-      <div class="card-ld c-adm rv">
-        <div class="card-ico">🛡️</div>
-        <h3>Admin / Petugas</h3>
-        <p>Kelola barang lelang, verifikasi peserta, dan pantau jalannya seluruh lelang dari panel khusus.</p>
-        <ul class="chk">
-          <li>Kelola data peserta</li><li>Tambah &amp; atur item lelang</li>
-          <li>Pantau semua penawaran</li><li>Laporan &amp; statistik lelang</li>
-        </ul>
-        <a href="{{ route('login.petugas') }}" class="cbtn">Masuk sebagai Admin &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="cta-lelang">
+  <div class="inner">
+    <div class="cta-grid">
+      <div>
+        <span class="lbl" style="color:var(--gold-l)">Untuk Pemilik Barang</span>
+        <h2 class="ttl" style="color:var(--cream)">Lelang Barang Anda<br><em style="color:var(--gold-l)">Bersama LuxBid</em></h2>
+        <p style="margin-top:.9rem;font-size:.9rem;color:rgba(250,247,240,.5);line-height:1.75;max-width:420px">Percayakan barang berharga Anda kepada platform lelang yang transparan, aman, dan dikelola oleh tim profesional.</p>
+        <div class="cta-steps">
+          <div class="cta-step">
+            <div class="cta-step-n">1</div>
+            <div class="cta-step-body"><h4>Hubungi Tim Kami</h4><p>Kirim pesan via WhatsApp atau email. Tim kami merespons dalam 1×24 jam.</p></div>
+          </div>
+          <div class="cta-step">
+            <div class="cta-step-n">2</div>
+            <div class="cta-step-body"><h4>Verifikasi & Penilaian Barang</h4><p>Petugas kami memverifikasi kondisi dan menentukan harga awal yang wajar.</p></div>
+          </div>
+          <div class="cta-step">
+            <div class="cta-step-n">3</div>
+            <div class="cta-step-body"><h4>Lelang Dibuka & Dipantau</h4><p>Barang Anda dilelang secara live. Anda bisa memantau penawaran secara real-time.</p></div>
+          </div>
+          <div class="cta-step">
+            <div class="cta-step-n">4</div>
+            <div class="cta-step-body"><h4>Terima Hasil Lelang</h4><p>Setelah lelang selesai, hasil transaksi diproses dan diserahkan kepada Anda.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="cta-card rv">
+        <span class="lbl" style="color:var(--gold-l)">Keuntungan Bergabung</span>
+        <h3 style="font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--cream);margin-top:.4rem;line-height:1.2">Mengapa Memilih<br>LuxBid?</h3>
+        <div class="cta-perks">
+          <div class="cta-perk"><i class="fas fa-shield-alt"></i> Proses lelang transparan & terpercaya</div>
+          <div class="cta-perk"><i class="fas fa-users"></i> Jangkauan ribuan peserta aktif</div>
+          <div class="cta-perk"><i class="fas fa-bolt"></i> Harga terbaik melalui kompetisi penawaran</div>
+          <div class="cta-perk"><i class="fas fa-headset"></i> Didampingi petugas dari awal hingga selesai</div>
+          <div class="cta-perk"><i class="fas fa-file-alt"></i> Laporan hasil lelang resmi & tercatat</div>
+          <div class="cta-perk"><i class="fas fa-lock"></i> Data barang & transaksi terjaga keamanannya</div>
+        </div>
+        <a href="/kontak" class="btn-cta-gold"><i class="fas fa-paper-plane"></i> Konsultasi Gratis Sekarang</a>
+        <p style="text-align:center;margin-top:.85rem;font-size:.72rem;color:rgba(250,247,240,.3)">Atau hubungi langsung via <a href="https://wa.me/6285869074622" target="_blank" rel="noopener" style="color:var(--gold-l);text-decoration:none">WhatsApp</a></p>
       </div>
     </div>
   </div>
@@ -362,9 +457,9 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
       <p class="ftag">Platform Pelelangan Online</p>
     </div>
     <div class="flinks">
-      <a href="{{ route('login.masyarakat') }}">Login Masyarakat</a>
-      <a href="{{ route('daftar.masyarakat') }}">Daftar Akun</a>
-      <a href="{{ route('login.petugas') }}">Admin Panel</a>
+      <a href="/kontak">Kontak</a>
+      <a href="/bantuan">Bantuan</a>
+      <a href="/kebijakan-privasi">Kebijakan Privasi</a>
     </div>
   </div>
   <div class="fbot">
@@ -376,6 +471,24 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
 <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('assets/theme.js') }}"></script>
+<script>
+function toggleMobileMenu() {
+  const links = document.getElementById('ln-links');
+  const icon  = document.getElementById('ln-burger-icon');
+  const open  = links.style.display === 'flex';
+  links.style.display = open ? 'none' : 'flex';
+  icon.className = open ? 'fas fa-bars' : 'fas fa-times';
+  document.body.style.overflow = open ? '' : 'hidden';
+}
+// Tutup menu saat link diklik
+document.getElementById('ln-links').addEventListener('click', function(e) {
+  if (e.target.tagName === 'A') {
+    this.style.display = 'none';
+    document.getElementById('ln-burger-icon').className = 'fas fa-bars';
+    document.body.style.overflow = '';
+  }
+});
+</script>
 <script>
 const rvEls = document.querySelectorAll('.rv');
 const obs = new IntersectionObserver((entries) => {

@@ -5,11 +5,15 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MasyarakatController;
 use App\Http\Controllers\PetugasController;
 use App\Http\Controllers\AdministratorController;
+use App\Http\Controllers\StaticPageController;
 use App\Http\Controllers\Auth\MasyarakatAuthController;
 use App\Http\Controllers\Auth\PetugasAuthController;
 
 // ── Public ───────────────────────────────────────────────────────────────────
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/kontak',           [StaticPageController::class, 'kontak'])->name('kontak');
+Route::get('/bantuan',          [StaticPageController::class, 'bantuan'])->name('bantuan');
+Route::get('/kebijakan-privasi',[StaticPageController::class, 'kebijakan'])->name('kebijakan');
 Route::get('/check-timer', [PetugasController::class, 'checkTimer'])->name('petugas.checkTimer');
 
 // Masyarakat Auth
@@ -19,7 +23,6 @@ Route::get('/daftar',  [MasyarakatAuthController::class, 'showRegister'])->name(
 Route::post('/daftar', [MasyarakatAuthController::class, 'register'])->name('daftar.masyarakat.post');
 Route::get('/lupa-password', [MasyarakatAuthController::class, 'showLupaPassword'])->name('lupa.password');
 Route::post('/lupa-password/step1', [MasyarakatAuthController::class, 'lupaPasswordStep1'])->name('lupa.password.step1');
-Route::post('/lupa-password/step2', [MasyarakatAuthController::class, 'lupaPasswordStep2'])->name('lupa.password.step2');
 Route::get('/logout', [MasyarakatAuthController::class, 'logout'])->name('logout');
 
 // Petugas Auth
@@ -38,6 +41,7 @@ Route::prefix('masyarakat')->middleware('masyarakat.auth')->group(function () {
     Route::post('/profile/update',     [MasyarakatController::class, 'updateProfile'])->name('masyarakat.profile.update');
     Route::post('/profile/password',   [MasyarakatController::class, 'updatePassword'])->name('masyarakat.profile.password');
     Route::post('/profile/foto',       [MasyarakatController::class, 'updateFoto'])->name('masyarakat.profile.foto');
+    Route::get('/faktur/{id_lelang}',  [MasyarakatController::class, 'fakturPdf'])->name('masyarakat.faktur');
 });
 
 // ── Petugas (protected) ──────────────────────────────────────────────────────
@@ -52,6 +56,7 @@ Route::prefix('petugas')->middleware('petugas.auth')->group(function () {
     Route::post('/aktivasi/buka',      [PetugasController::class, 'bukaLelang'])->name('petugas.aktivasi.buka');
     Route::post('/aktivasi/tutup',     [PetugasController::class, 'tutupLelang'])->name('petugas.aktivasi.tutup');
     Route::get('/laporan',             [PetugasController::class, 'laporan'])->name('petugas.laporan');
+    Route::get('/laporan/pdf',         [PetugasController::class, 'laporanPdf'])->name('petugas.laporan.pdf');
     Route::get('/isi',                 [PetugasController::class, 'isi'])->name('petugas.isi');
     Route::get('/print',               [PetugasController::class, 'print'])->name('petugas.print');
     Route::get('/petugas',             [PetugasController::class, 'petugas'])->name('petugas.petugas');
@@ -65,6 +70,7 @@ Route::prefix('administrator')->middleware('petugas.auth')->group(function () {
     Route::post('/barang/update',      [AdministratorController::class, 'updateBarang'])->name('administrator.barang.update');
     Route::get('/barang/hapus',        [AdministratorController::class, 'hapusBarang'])->name('administrator.barang.hapus');
     Route::get('/laporan',             [AdministratorController::class, 'laporan'])->name('administrator.laporan');
+    Route::get('/laporan/pdf',         [AdministratorController::class, 'laporanPdf'])->name('administrator.laporan.pdf');
     Route::get('/print',               [AdministratorController::class, 'print'])->name('administrator.print');
     Route::get('/petugas',             [AdministratorController::class, 'petugas'])->name('administrator.petugas');
     Route::post('/petugas/simpan',     [AdministratorController::class, 'simpanPetugas'])->name('administrator.petugas.simpan');

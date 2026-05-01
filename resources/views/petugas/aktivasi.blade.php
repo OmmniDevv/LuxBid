@@ -18,7 +18,7 @@
         @forelse($rows_lelang as $i=>$d)
         <tr>
           <td style="color:var(--ink-l);font-size:.8rem">{{ $i+1 }}</td>
-          <td><strong style="color:var(--ink)">{{ $d->barang->nama_barang }}</strong></td>
+          <td><strong style="color:var(--ink)">{{ $d->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong></td>
           <td style="color:var(--ink-m)">{{ $d->tgl_lelang ?? '—' }}</td>
           <td style="font-weight:600;color:var(--success)">{!! $d->_harga_tertinggi ? 'Rp '.number_format($d->_harga_tertinggi) : '<span style="color:var(--ink-l)">Belum ada</span>' !!}</td>
           <td>
@@ -49,7 +49,7 @@
 @foreach($rows_lelang as $d)
 <div class="modal-m-overlay" id="modal-buka{{ $d->id_lelang }}">
   <div class="modal-m"><div class="modal-m-header"><span class="modal-m-title">Buka Sesi Lelang</span><button class="modal-m-close" onclick="closeModal('modal-buka{{ $d->id_lelang }}')">×</button></div>
-  <div class="modal-m-body" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;margin-bottom:.75rem">🔓</div><p style="font-size:.9rem;color:var(--ink-s)">Buka sesi lelang untuk barang <strong>{{ $d->barang->nama_barang }}</strong>?</p></div>
+  <div class="modal-m-body" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;margin-bottom:.75rem">🔓</div><p style="font-size:.9rem;color:var(--ink-s)">Buka sesi lelang untuk barang <strong>{{ $d->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong>?</p></div>
   <form method="post" action="{{ route('petugas.aktivasi.buka') }}">@csrf<input type="hidden" name="id_lelang" value="{{ $d->id_lelang }}">
   <div class="modal-m-footer"><button type="button" class="btn-m btn-outline-m" onclick="closeModal('modal-buka{{ $d->id_lelang }}')">Batal</button><button type="submit" class="btn-m btn-success-m"><i class="fas fa-play"></i> Ya, Buka Lelang</button></div>
   </form></div>
@@ -58,7 +58,7 @@
   <div class="modal-m"><div class="modal-m-header"><span class="modal-m-title">Tutup Sesi Lelang</span><button class="modal-m-close" onclick="closeModal('modal-tutup{{ $d->id_lelang }}')">×</button></div>
   <div class="modal-m-body" style="text-align:center;padding:1.5rem">
     <div style="font-size:2.5rem;margin-bottom:.75rem">🔒</div>
-    <p style="font-size:.9rem;color:var(--ink-s)">Tutup sesi lelang <strong>{{ $d->barang->nama_barang }}</strong>? Pemenang ditetapkan berdasarkan penawaran tertinggi.</p>
+    <p style="font-size:.9rem;color:var(--ink-s)">Tutup sesi lelang <strong>{{ $d->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong>? Pemenang ditetapkan berdasarkan penawaran tertinggi.</p>
     @if($d->_pemenang)<div style="margin-top:1rem;background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:var(--rs);padding:.85rem;font-size:.85rem;color:var(--ink-s)">🏆 Pemenang saat ini: <strong>{{ $d->_pemenang }}</strong> — <strong>Rp {{ number_format($d->_harga_tertinggi) }}</strong></div>@endif
   </div>
   <form method="post" action="{{ route('petugas.aktivasi.tutup') }}">@csrf

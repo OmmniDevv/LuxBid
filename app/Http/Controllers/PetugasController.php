@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Traits\LelangTrait;
 use App\Models\Barang;
 use App\Models\GambarBarang;
 use App\Models\Lelang;
@@ -12,12 +13,14 @@ use Illuminate\Support\Facades\DB;
 
 class PetugasController extends Controller
 {
+    use LelangTrait;
+
     public function index()
     {
-        $total_barang = Barang::count();
+        $total_barang       = Barang::count();
         $total_lelang_aktif = Lelang::where('status', 'dibuka')->count();
-        $total_penawaran = HistoryLelang::count();
-        $total_masyarakat = DB::table('tb_masyarakat')->count();
+        $total_penawaran    = HistoryLelang::count();
+        $total_masyarakat   = DB::table('tb_masyarakat')->count();
 
         $recent_lelang = Lelang::with(['barang', 'petugas'])
             ->orderByDesc('id_lelang')
@@ -32,7 +35,7 @@ class PetugasController extends Controller
     public function barang()
     {
         $rows_barang = Barang::orderByDesc('id_barang')->get();
-        $all_gambar = GambarBarang::whereIn('id_barang', $rows_barang->pluck('id_barang'))
+        $all_gambar  = GambarBarang::whereIn('id_barang', $rows_barang->pluck('id_barang'))
             ->orderBy('urutan')
             ->get()
             ->groupBy('id_barang')
@@ -48,6 +51,7 @@ class PetugasController extends Controller
             'tgl'              => $request->input('tgl'),
             'harga_awal'       => $request->input('harga_awal'),
             'deskripsi_barang' => $request->input('deskripsi_barang', ''),
+            'nama_penjual'     => $request->input('nama_penjual', ''),
         ]);
 
         $this->uploadGambar($request, $barang->id_barang);
@@ -64,6 +68,7 @@ class PetugasController extends Controller
             'tgl'              => $request->input('tgl'),
             'harga_awal'       => $request->input('harga_awal'),
             'deskripsi_barang' => $request->input('deskripsi_barang', ''),
+            'nama_penjual'     => $request->input('nama_penjual', ''),
         ]);
 
         for ($i = 1; $i <= 3; $i++) {
@@ -75,8 +80,8 @@ class PetugasController extends Controller
                 }
             }
             if ($request->hasFile("gambar_{$i}") && $request->file("gambar_{$i}")->isValid()) {
-                $file = $request->file("gambar_{$i}");
-                $ext = strtolower($file->getClientOriginalExtension());
+                $file     = $request->file("gambar_{$i}");
+                $ext      = strtolower($file->getClientOriginalExtension());
                 $filename = "barang_{$id_barang}_{$i}_" . time() . ".{$ext}";
                 $file->move(public_path('uploads/barang'), $filename);
 
@@ -107,30 +112,14 @@ class PetugasController extends Controller
 
     public function aktivasi()
     {
-        $rows_lelang = Lelang::with(['barang', 'petugas'])
-            ->orderByDesc('id_lelang')
-            ->get()
-            ->map(function ($l) {
-                $l->_harga_tertinggi = DB::table('history_lelang')->where('id_lelang', $l->id_lelang)->max('penawaran_harga');
-                $l->_pemenang = null;
-                $l->_id_user_pw = 0;
-                if ($l->_harga_tertinggi) {
-                    $pw = DB::table('history_lelang')
-                        ->join('tb_masyarakat', 'history_lelang.id_user', '=', 'tb_masyarakat.id_user')
-                        ->where('history_lelang.penawaran_harga', $l->_harga_tertinggi)
-                        ->where('history_lelang.id_lelang', $l->id_lelang)
-                        ->select('tb_masyarakat.nama_lengkap', 'history_lelang.id_user')
-                        ->first();
-                    $l->_pemenang = $pw?->nama_lengkap;
-                    $l->_id_user_pw = $pw?->id_user ?? 0;
-                }
-                return $l;
-            });
+        $rows_lelang = $this->enrichLelang(
+            Lelang::with(['barang', 'petugas'])->orderByDesc('id_lelang')->get(),
+            withUserId: true
+        );
 
-        $barang_list = Barang::orderBy('nama_barang')->get();
+        $barang_list     = Barang::orderBy('nama_barang')->get();
         $petugas_session = Petugas::where('username', session('username'))->first();
-
-        $lelang_aktif = $rows_lelang->where('status', 'dibuka')->values();
+        $lelang_aktif    = $rows_lelang->where('status', 'dibuka')->values();
 
         return view('petugas.aktivasi', compact('rows_lelang', 'barang_list', 'petugas_session', 'lelang_aktif'));
     }
@@ -146,6 +135,7 @@ class PetugasController extends Controller
             'status'      => 'dibuka',
             'timer_end'   => now()->addMinutes(6),
         ]);
+
         return redirect()->route('petugas.aktivasi', ['info' => 'simpan']);
     }
 
@@ -153,6 +143,7 @@ class PetugasController extends Controller
     {
         Lelang::where('id_lelang', $request->input('id_lelang'))
             ->update(['status' => 'dibuka', 'id_user' => 0, 'harga_akhir' => 0, 'timer_end' => now()->addMinutes(6)]);
+
         return redirect()->route('petugas.aktivasi', ['info' => 'update']);
     }
 
@@ -164,13 +155,18 @@ class PetugasController extends Controller
             ->get();
 
         foreach ($expired as $l) {
-            $top = \DB::table('history_lelang')->where('id_lelang', $l->id_lelang)->orderByDesc('penawaran_harga')->first();
+            $top = DB::table('history_lelang')
+                ->where('id_lelang', $l->id_lelang)
+                ->orderByDesc('penawaran_harga')
+                ->first();
+
             $l->update([
                 'status'      => 'ditutup',
                 'harga_akhir' => $top ? $top->penawaran_harga : 0,
                 'id_user'     => $top ? $top->id_user : 0,
             ]);
         }
+
         return response()->json(['closed' => $expired->count()]);
     }
 
@@ -188,51 +184,23 @@ class PetugasController extends Controller
 
     public function laporan()
     {
-        $total_selesai = Lelang::where('status', 'ditutup')->count();
-        $total_aktif = Lelang::where('status', 'dibuka')->count();
+        $total_selesai   = Lelang::where('status', 'ditutup')->count();
+        $total_aktif     = Lelang::where('status', 'dibuka')->count();
         $total_penawaran = HistoryLelang::count();
-        $total_nilai = Lelang::where('status', 'ditutup')->sum('harga_akhir');
+        $total_nilai     = Lelang::where('status', 'ditutup')->sum('harga_akhir');
 
-        $rows = Lelang::with(['barang', 'petugas'])
-            ->orderByDesc('id_lelang')
-            ->get()
-            ->map(function ($l) {
-                $l->_harga_tertinggi = DB::table('history_lelang')->where('id_lelang', $l->id_lelang)->max('penawaran_harga');
-                $l->_pemenang = null;
-                if ($l->_harga_tertinggi) {
-                    $pw = DB::table('history_lelang')
-                        ->join('tb_masyarakat', 'history_lelang.id_user', '=', 'tb_masyarakat.id_user')
-                        ->where('history_lelang.penawaran_harga', $l->_harga_tertinggi)
-                        ->where('history_lelang.id_lelang', $l->id_lelang)
-                        ->select('tb_masyarakat.nama_lengkap')
-                        ->first();
-                    $l->_pemenang = $pw?->nama_lengkap;
-                }
-                return $l;
-            });
+        $rows = $this->enrichLelang(
+            Lelang::with(['barang', 'petugas'])->orderByDesc('id_lelang')->get()
+        );
 
         return view('petugas.laporan', compact('total_selesai', 'total_aktif', 'total_penawaran', 'total_nilai', 'rows'));
     }
 
     public function isi()
     {
-        $lelang_aktif = Lelang::with('barang')
-            ->where('status', 'dibuka')
-            ->get()
-            ->map(function ($l) {
-                $l->_harga_tertinggi = DB::table('history_lelang')->where('id_lelang', $l->id_lelang)->max('penawaran_harga');
-                $l->_pemenang = null;
-                if ($l->_harga_tertinggi) {
-                    $pw = DB::table('history_lelang')
-                        ->join('tb_masyarakat', 'history_lelang.id_user', '=', 'tb_masyarakat.id_user')
-                        ->where('history_lelang.penawaran_harga', $l->_harga_tertinggi)
-                        ->where('history_lelang.id_lelang', $l->id_lelang)
-                        ->select('tb_masyarakat.nama_lengkap')
-                        ->first();
-                    $l->_pemenang = $pw?->nama_lengkap;
-                }
-                return $l;
-            });
+        $lelang_aktif = $this->enrichLelang(
+            Lelang::with('barang')->where('status', 'dibuka')->get()
+        );
 
         return view('petugas.isi', compact('lelang_aktif'));
     }
@@ -240,48 +208,45 @@ class PetugasController extends Controller
     public function petugas()
     {
         $tb_petugas = Petugas::with('level')->orderBy('id_level')->get();
-        $tb_level = DB::table('tb_level')->get();
+        $tb_level   = DB::table('tb_level')->get();
+
         return view('petugas.petugas', compact('tb_petugas', 'tb_level'));
     }
 
     public function print()
     {
-        $rows = Lelang::with(['barang', 'petugas'])
-            ->orderByDesc('id_lelang')
-            ->get()
-            ->map(function ($l) {
-                $l->_harga_tertinggi = DB::table('history_lelang')->where('id_lelang', $l->id_lelang)->max('penawaran_harga');
-                $l->_pemenang = null;
-                if ($l->_harga_tertinggi) {
-                    $pw = DB::table('history_lelang')
-                        ->join('tb_masyarakat', 'history_lelang.id_user', '=', 'tb_masyarakat.id_user')
-                        ->where('history_lelang.penawaran_harga', $l->_harga_tertinggi)
-                        ->where('history_lelang.id_lelang', $l->id_lelang)
-                        ->select('tb_masyarakat.nama_lengkap')
-                        ->first();
-                    $l->_pemenang = $pw?->nama_lengkap;
-                }
-                return $l;
-            });
+        $rows = $this->enrichLelang(
+            Lelang::with(['barang', 'petugas'])->orderByDesc('id_lelang')->get()
+        );
 
         return view('petugas.print', compact('rows'));
     }
 
-    private function uploadGambar(Request $request, int $id_barang): void
+    public function laporanPdf(Request $request)
     {
-        $upload_dir = public_path('uploads/barang');
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0755, true);
+        $total_selesai   = Lelang::where('status', 'ditutup')->count();
+        $total_aktif     = Lelang::where('status', 'dibuka')->count();
+        $total_penawaran = HistoryLelang::count();
+        $total_nilai     = Lelang::where('status', 'ditutup')->sum('harga_akhir');
+
+        $rows     = $this->enrichLelang(
+            Lelang::with(['barang', 'petugas'])->orderByDesc('id_lelang')->get()
+        );
+        $mode     = $request->query('mode', 'print');
+        $username = session('username', 'petugas');
+        $now      = now()->timezone('Asia/Jakarta');
+
+        if ($mode === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('shared.laporan_pdf_doc', compact(
+                'rows', 'total_selesai', 'total_aktif', 'total_penawaran', 'total_nilai', 'username'
+            ))->setPaper('a4', 'landscape');
+
+            $filename = 'laporan_' . $username . '_' . $now->format('Y-m-d') . '_' . $now->format('H-i') . '.pdf';
+            return $pdf->download($filename);
         }
 
-        for ($i = 1; $i <= 3; $i++) {
-            if ($request->hasFile("gambar_{$i}") && $request->file("gambar_{$i}")->isValid()) {
-                $file = $request->file("gambar_{$i}");
-                $ext = strtolower($file->getClientOriginalExtension());
-                $filename = "barang_{$id_barang}_{$i}_" . time() . ".{$ext}";
-                $file->move($upload_dir, $filename);
-                GambarBarang::create(['id_barang' => $id_barang, 'nama_file' => $filename, 'urutan' => $i]);
-            }
-        }
+        return view('shared.laporan_pdf', compact(
+            'rows', 'total_selesai', 'total_aktif', 'total_penawaran', 'total_nilai', 'mode', 'username'
+        ));
     }
 }

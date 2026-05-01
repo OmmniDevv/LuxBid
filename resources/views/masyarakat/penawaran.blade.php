@@ -37,6 +37,7 @@
 @if(request('info')=='update')<div class="alert-m alert-success-m fade-up"><i class="fas fa-check-circle alert-m-icon"></i><span>Penawaran berhasil diperbarui.</span><button class="alert-close" onclick="this.closest('.alert-m').remove()">×</button></div>@endif
 @if(request('info')=='hapus')<div class="alert-m alert-warn-m fade-up"><i class="fas fa-exclamation-triangle alert-m-icon"></i><span>Penawaran berhasil dihapus.</span><button class="alert-close" onclick="this.closest('.alert-m').remove()">×</button></div>@endif
 @if(request('info')=='ditutup')<div class="alert-m alert-warn-m fade-up"><i class="fas fa-exclamation-triangle alert-m-icon"></i><span>Lelang sudah ditutup. Penawaran tidak dapat diterima.</span><button class="alert-close" onclick="this.closest('.alert-m').remove()">×</button></div>@endif
+@if(request('info')=='min_bid')<div class="alert-m alert-warn-m fade-up"><i class="fas fa-exclamation-triangle alert-m-icon"></i><span>Penawaran ditolak. Minimal penambahan adalah Rp 1.000 dari penawaran tertinggi saat ini.</span><button class="alert-close" onclick="this.closest('.alert-m').remove()">×</button></div>@endif
 
 @if($lelang_aktif->isNotEmpty())
 <div class="fade-up delay-1" style="margin-bottom:.75rem">
@@ -124,6 +125,9 @@
             @if($d->timer_end)<span class="timer-badge" id="timer-modal-{{ $d->id_lelang }}" data-end="{{ $d->timer_end->timestamp * 1000 }}"><i class="fas fa-clock"></i> <span class="timer-val">--:--</span></span>
             @else<strong>—</strong>@endif
           </div>
+          @if($d->barang->nama_penjual)
+          <div style="grid-column:span 2"><span style="color:var(--ink-m)">Penjual</span><br><strong>{{ $d->barang->nama_penjual }}</strong></div>
+          @endif
         </div>
         @if($d->barang->deskripsi_barang)
         <div style="margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--gold-ln);font-size:.83rem;color:var(--ink-s);line-height:1.6">
@@ -183,9 +187,9 @@
           <label class="form-label-m">Nominal Penawaran (Rp)</label>
           <input type="number" class="form-control-m" style="padding-left:1rem;font-size:1.1rem;font-weight:600"
                  name="penawaran_harga" placeholder="Masukkan jumlah tawaran..."
-                 min="{{ ($d->penawaran_tertinggi ?? $d->barang->harga_awal) + 1 }}" required>
+                 min="{{ ($d->penawaran_tertinggi ?? $d->barang->harga_awal) + 1000 }}" required>
           <div style="font-size:.72rem;color:var(--ink-l);margin-top:.3rem">
-            Minimal: Rp {{ number_format(($d->penawaran_tertinggi ?? $d->barang->harga_awal) + 1) }}
+            Minimal: Rp {{ number_format(($d->penawaran_tertinggi ?? $d->barang->harga_awal) + 1000) }} (penambahan min. Rp 1.000)
           </div>
         </div>
       </div>
@@ -214,8 +218,8 @@
         @forelse($history as $i=>$h)
         <tr>
           <td style="color:var(--ink-l)">{{ $i+1 }}</td>
-          <td><strong style="color:var(--ink)">{{ $h->barang->nama_barang }}</strong></td>
-          <td style="color:var(--ink-m)">Rp {{ number_format($h->barang->harga_awal) }}</td>
+          <td><strong style="color:var(--ink)">{{ $h->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong></td>
+          <td style="color:var(--ink-m)">{{ $h->barang ? 'Rp '.number_format($h->barang->harga_awal) : '—' }}</td>
           <td style="font-weight:600;color:var(--ink)">Rp {{ number_format($h->penawaran_harga) }}</td>
           <td>
             @if($h->penawaran_harga == $h->lelang->harga_akhir && $h->lelang->harga_akhir > 0)
@@ -232,6 +236,8 @@
               <button class="btn-m btn-warn-m btn-sm-m" onclick="openModal('modal-ubah{{ $h->id_history }}')"><i class="fas fa-edit"></i> Edit</button>
               <button class="btn-m btn-danger-m btn-sm-m" onclick="openModal('modal-hapus{{ $h->id_history }}')"><i class="fas fa-trash"></i></button>
             </div>
+            @elseif($h->penawaran_harga == $h->lelang->harga_akhir && $h->lelang->harga_akhir > 0)
+            <a href="{{ route('masyarakat.faktur', $h->id_lelang) }}" class="btn-m btn-gold-m btn-sm-m" style="display:inline-flex;align-items:center;gap:.35rem"><i class="fas fa-file-pdf"></i> Faktur</a>
             @else<span style="color:var(--ink-l);font-size:.78rem">—</span>@endif
           </td>
         </tr>
@@ -252,7 +258,7 @@
     <form method="post" action="{{ route('masyarakat.penawaran.update') }}">
       @csrf
       <div class="modal-m-body">
-        <div style="background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:var(--rs);padding:.85rem;margin-bottom:1rem;font-size:.83rem">Barang: <strong>{{ $h->barang->nama_barang }}</strong></div>
+        <div style="background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:var(--rs);padding:.85rem;margin-bottom:1rem;font-size:.83rem">Barang: <strong>{{ $h->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong></div>
         <input type="hidden" name="id_history" value="{{ $h->id_history }}">
         <div class="form-group-m">
           <label class="form-label-m">Penawaran Baru (Rp)</label>
@@ -269,7 +275,7 @@
 <div class="modal-m-overlay" id="modal-hapus{{ $h->id_history }}">
   <div class="modal-m">
     <div class="modal-m-header"><span class="modal-m-title">Hapus Penawaran</span><button class="modal-m-close" onclick="closeModal('modal-hapus{{ $h->id_history }}')">×</button></div>
-    <div class="modal-m-body" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;margin-bottom:.75rem">🗑️</div><p style="font-size:.9rem;color:var(--ink-s)">Hapus penawaran untuk <strong>{{ $h->barang->nama_barang }}</strong>?</p></div>
+    <div class="modal-m-body" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;margin-bottom:.75rem">🗑️</div><p style="font-size:.9rem;color:var(--ink-s)">Hapus penawaran untuk <strong>{{ $h->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong>?</p></div>
     <div class="modal-m-footer">
       <button class="btn-m btn-outline-m" onclick="closeModal('modal-hapus{{ $h->id_history }}')">Batal</button>
       <a href="{{ route('masyarakat.penawaran.hapus', ['id_history'=>$h->id_history]) }}" class="btn-m btn-danger-m">Ya, Hapus</a>

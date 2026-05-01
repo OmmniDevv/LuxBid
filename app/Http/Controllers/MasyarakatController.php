@@ -68,7 +68,7 @@ class MasyarakatController extends Controller
             return redirect()->route('masyarakat.profile')->with('info_password', 'Password minimal 6 karakter.')->with('info_type_pw', 'danger');
         }
 
-        $user->update(['password' => password_hash($request->input('new_password'), PASSWORD_DEFAULT)]);
+        $user->update(['password' => Hash::make($request->input('new_password'))]);
         return redirect()->route('masyarakat.profile')->with('info_password', 'Password berhasil diubah.')->with('info_type_pw', 'success');
     }
 
@@ -163,7 +163,7 @@ class MasyarakatController extends Controller
         }
         if ($lelang->timer_end && now()->gt($lelang->timer_end)) {
             // Auto-close it now
-            $top = \Illuminate\Support\Facades\DB::table('history_lelang')
+            $top = DB::table('history_lelang')
                 ->where('id_lelang', $lelang->id_lelang)->orderByDesc('penawaran_harga')->first();
             $lelang->update([
                 'status'      => 'ditutup',
@@ -173,11 +173,17 @@ class MasyarakatController extends Controller
             return redirect()->route('masyarakat.penawaran', ['info' => 'ditutup']);
         }
 
+        $penawaran_baru = (int) $request->input('penawaran_harga');
+        $tertinggi = DB::table('history_lelang')->where('id_lelang', $lelang->id_lelang)->max('penawaran_harga') ?? $lelang->barang->harga_awal;
+        if ($penawaran_baru < $tertinggi + 1000) {
+            return redirect()->route('masyarakat.penawaran', ['info' => 'min_bid']);
+        }
+
         HistoryLelang::create([
             'id_lelang'       => $request->input('id_lelang'),
             'id_barang'       => $request->input('id_barang'),
             'id_user'         => $request->input('id_user'),
-            'penawaran_harga' => $request->input('penawaran_harga'),
+            'penawaran_harga' => $penawaran_baru,
         ]);
         // Reset timer on new bid
         $lelang->update(['timer_end' => now()->addMinutes(6)]);
@@ -187,8 +193,24 @@ class MasyarakatController extends Controller
 
     public function updatePenawaran(Request $request)
     {
-        HistoryLelang::where('id_history', $request->input('id_history'))
-            ->update(['penawaran_harga' => $request->input('penawaran_harga')]);
+        $id_history    = $request->input('id_history');
+        $penawaran_baru = (int) $request->input('penawaran_harga');
+
+        $existing = HistoryLelang::find($id_history);
+        if ($existing) {
+            $tertinggi = DB::table('history_lelang')
+                ->where('id_lelang', $existing->id_lelang)
+                ->where('id_history', '!=', $id_history)
+                ->max('penawaran_harga');
+            $lelang = Lelang::find($existing->id_lelang);
+            $base   = $tertinggi ?? ($lelang?->barang?->harga_awal ?? 0);
+            if ($penawaran_baru < $base + 1000) {
+                return redirect()->route('masyarakat.penawaran', ['info' => 'min_bid']);
+            }
+        }
+
+        HistoryLelang::where('id_history', $id_history)
+            ->update(['penawaran_harga' => $penawaran_baru]);
 
         return redirect()->route('masyarakat.penawaran', ['info' => 'update']);
     }
@@ -198,5 +220,30 @@ class MasyarakatController extends Controller
         HistoryLelang::where('id_history', $request->input('id_history'))->delete();
 
         return redirect()->route('masyarakat.penawaran', ['info' => 'hapus']);
+    }
+
+    public function fakturPdf($id_lelang)
+    {
+        $id_user = session('id_user');
+
+        $lelang = Lelang::with(['barang', 'pemenang'])->findOrFail($id_lelang);
+
+        // Hanya pemenang yang boleh akses
+        if ($lelang->status !== 'ditutup' || (int)$lelang->id_user !== (int)$id_user) {
+            abort(403, 'Anda bukan pemenang lelang ini.');
+        }
+
+        $nomor_faktur = 'LXB-' . strtoupper(substr(md5($id_lelang . $id_user), 0, 8));
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('shared.faktur_pdf', [
+            'lelang'       => $lelang,
+            'pemenang'     => $lelang->pemenang,
+            'barang'       => $lelang->barang,
+            'nomor_faktur' => $nomor_faktur,
+            'tgl_cetak'    => now()->timezone('Asia/Jakarta')->format('d/m/Y H:i'),
+        ])->setPaper('a4', 'portrait');
+
+        $filename = 'faktur_' . $nomor_faktur . '.pdf';
+        return $pdf->download($filename);
     }
 }

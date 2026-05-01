@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Masyarakat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
 
 class MasyarakatAuthController extends Controller
 {
@@ -71,6 +72,7 @@ class MasyarakatAuthController extends Controller
             'username'     => $username,
             'password'     => md5($request->input('password')),
             'telp'         => $telp,
+            'email'        => $request->input('email') ?: null,
         ]);
 
         return redirect()->route('login.masyarakat', ['info' => 'daftar']);
@@ -87,36 +89,40 @@ class MasyarakatAuthController extends Controller
         $telp = trim($request->input('telp'));
 
         $user = Masyarakat::where('username', $username)->where('telp', $telp)->first();
-        if ($user) {
-            return view('auth.lupa_password', ['step' => 2, 'found_user' => $user]);
+        if (!$user) {
+            return view('auth.lupa_password', [
+                'step'     => 1,
+                'msg'      => 'Username atau nomor telepon tidak ditemukan. Periksa kembali data Anda.',
+                'msg_type' => 'warn',
+            ]);
         }
 
-        return view('auth.lupa_password', [
-            'step' => 1,
-            'msg' => 'Username atau nomor telepon tidak ditemukan. Periksa kembali data Anda.',
-            'msg_type' => 'warn',
-        ]);
-    }
-
-    public function lupaPasswordStep2(Request $request)
-    {
-        $username = trim($request->input('username_hidden'));
-        $newpwd = $request->input('new_password');
-        $confpwd = $request->input('confirm_password');
-
-        $user = Masyarakat::where('username', $username)->first();
-
-        if (strlen($newpwd) < 6) {
-            return view('auth.lupa_password', ['step' => 2, 'found_user' => $user, 'msg' => 'Password minimal 6 karakter.', 'msg_type' => 'warn']);
-        }
-        if ($newpwd !== $confpwd) {
-            return view('auth.lupa_password', ['step' => 2, 'found_user' => $user, 'msg' => 'Konfirmasi password tidak cocok.', 'msg_type' => 'warn']);
-        }
-
-        $user->password = password_hash($newpwd, PASSWORD_DEFAULT);
+        $newPassword = $this->generatePassword();
+        $user->password = password_hash($newPassword, PASSWORD_DEFAULT);
         $user->save();
 
-        return view('auth.lupa_password', ['step' => 3]);
+        return view('auth.lupa_password', ['step' => 3, 'new_password' => $newPassword]);
+    }
+
+    private function generatePassword(): string
+    {
+        $upper   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $lower   = 'abcdefghijklmnopqrstuvwxyz';
+        $digits  = '0123456789';
+        $symbols = '!@#$%^&*';
+        $all     = $upper . $lower . $digits . $symbols;
+
+        // Pastikan minimal 1 dari tiap kategori
+        $pwd  = $upper[random_int(0, strlen($upper) - 1)];
+        $pwd .= $lower[random_int(0, strlen($lower) - 1)];
+        $pwd .= $digits[random_int(0, strlen($digits) - 1)];
+        $pwd .= $symbols[random_int(0, strlen($symbols) - 1)];
+
+        for ($i = 4; $i < 12; $i++) {
+            $pwd .= $all[random_int(0, strlen($all) - 1)];
+        }
+
+        return str_shuffle($pwd);
     }
 
     public function logout()

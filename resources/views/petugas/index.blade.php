@@ -26,8 +26,8 @@
         @forelse($recent_lelang as $i=>$row)
         <tr>
           <td style="color:var(--ink-l);font-size:.8rem">{{ $i+1 }}</td>
-          <td><strong style="color:var(--ink)">{{ $row->barang->nama_barang }}</strong></td>
-          <td>Rp {{ number_format($row->barang->harga_awal) }}</td>
+          <td><strong style="color:var(--ink)">{{ $row->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong></td>
+          <td>{{ $row->barang ? 'Rp '.number_format($row->barang->harga_awal) : '—' }}</td>
           <td>{{ $row->harga_akhir ? 'Rp '.number_format($row->harga_akhir) : '—' }}</td>
           <td>@if($row->status=='dibuka')<span class="badge-m badge-open"><i class="fas fa-circle" style="font-size:.5rem"></i> Dibuka</span>@else<span class="badge-m badge-closed">Ditutup</span>@endif</td>
           <td style="font-size:.82rem;color:var(--ink-m)">{{ $row->petugas->nama_petugas ?? '—' }}</td>

@@ -12,6 +12,9 @@
 .img-slot-badge{position:absolute;top:.35rem;left:.35rem;background:var(--ink);color:var(--cream);font-size:.62rem;font-weight:700;padding:.15rem .4rem;border-radius:4px;z-index:3}
 .img-slot-remove{position:absolute;top:.35rem;right:.35rem;background:var(--danger);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:.75rem;cursor:pointer;z-index:3;display:none;align-items:center;justify-content:center}
 .img-slot-remove.visible{display:flex}
+/* Fix modal scroll untuk form panjang */
+.modal-tall .modal-m-body{max-height:calc(100vh - 200px);overflow-y:auto}
+.modal-tall{align-items:flex-start;padding-top:2rem;padding-bottom:2rem}
 </style>
 @endpush
 @section('content')
@@ -28,7 +31,7 @@
   <div class="card-m-header"><div class="card-m-title"><span>📦</span> Daftar Barang Lelang</div></div>
   <div style="overflow-x:auto">
     <table class="table-m">
-      <thead><tr><th>#</th><th>Foto</th><th>Nama Barang</th><th>Tanggal</th><th>Harga Awal</th><th>Deskripsi</th><th>Aksi</th></tr></thead>
+      <thead><tr><th>#</th><th>Foto</th><th>Nama Barang</th><th>Penjual</th><th>Tanggal</th><th>Harga Awal</th><th>Deskripsi</th><th>Aksi</th></tr></thead>
       <tbody>
         @forelse($rows_barang as $i=>$d)
         @php $thumb = $all_gambar[$d->id_barang][1] ?? null; @endphp
@@ -39,6 +42,7 @@
             @else<div style="width:48px;height:48px;background:var(--cream-d);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">📷</div>@endif
           </td>
           <td><strong style="color:var(--ink)">{{ $d->nama_barang }}</strong></td>
+          <td style="color:var(--ink-m)">{{ $d->nama_penjual ?: '—' }}</td>
           <td style="color:var(--ink-m)">{{ $d->tgl }}</td>
           <td style="font-weight:600;color:var(--success)">Rp {{ number_format($d->harga_awal) }}</td>
           <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink-m)">{{ $d->deskripsi_barang ?: '—' }}</td>
@@ -64,12 +68,13 @@
   <div class="modal-m-body"><div style="text-align:center;padding:1rem 0"><div style="font-size:2.5rem;margin-bottom:.75rem">🗑️</div><p style="font-size:.9rem;color:var(--ink-s)">Yakin ingin menghapus barang <strong>{{ $d->nama_barang }}</strong>?</p></div></div>
   <div class="modal-m-footer"><button class="btn-m btn-outline-m" onclick="closeModal('modal-hapus{{ $d->id_barang }}')">Batal</button><a href="{{ route('petugas.barang.hapus', ['id_barang'=>$d->id_barang]) }}" class="btn-m btn-danger-m">Ya, Hapus</a></div></div>
 </div>
-<div class="modal-m-overlay" id="modal-ubah{{ $d->id_barang }}">
+<div class="modal-m-overlay modal-tall" id="modal-ubah{{ $d->id_barang }}">
   <div class="modal-m" style="max-width:520px"><div class="modal-m-header"><span class="modal-m-title">Edit Barang</span><button class="modal-m-close" onclick="closeModal('modal-ubah{{ $d->id_barang }}')">×</button></div>
   <form method="post" action="{{ route('petugas.barang.update') }}" enctype="multipart/form-data">@csrf
     <div class="modal-m-body">
       <input type="hidden" name="id_barang" value="{{ $d->id_barang }}">
       <div class="form-group-m"><label class="form-label-m">Nama Barang</label><input type="text" class="form-control-m" name="nama_barang" value="{{ $d->nama_barang }}" required></div>
+      <div class="form-group-m"><label class="form-label-m">Nama Penjual</label><input type="text" class="form-control-m" name="nama_penjual" value="{{ $d->nama_penjual }}" placeholder="Nama penjual / pemilik barang..."></div>
       <div class="form-group-m"><label class="form-label-m">Tanggal</label><input type="date" class="form-control-m" style="padding-left:1rem" name="tgl" value="{{ $d->tgl }}" required></div>
       <div class="form-group-m"><label class="form-label-m">Harga Awal (Rp)</label><input type="number" class="form-control-m" style="padding-left:1rem" name="harga_awal" value="{{ $d->harga_awal }}" min="0" required></div>
       <div class="form-group-m"><label class="form-label-m">Deskripsi</label><textarea class="form-control-m" style="padding-left:1rem;resize:vertical;min-height:80px" name="deskripsi_barang">{{ $d->deskripsi_barang }}</textarea></div>
@@ -93,11 +98,12 @@
 </div>
 @endforeach
 
-<div class="modal-m-overlay" id="modal-tambah">
+<div class="modal-m-overlay modal-tall" id="modal-tambah">
   <div class="modal-m" style="max-width:520px"><div class="modal-m-header"><span class="modal-m-title">Tambah Barang Baru</span><button class="modal-m-close" onclick="closeModal('modal-tambah')">×</button></div>
   <form method="post" action="{{ route('petugas.barang.simpan') }}" enctype="multipart/form-data">@csrf
     <div class="modal-m-body">
       <div class="form-group-m"><label class="form-label-m">Nama Barang</label><input type="text" class="form-control-m" name="nama_barang" placeholder="Nama barang lelang..." required></div>
+      <div class="form-group-m"><label class="form-label-m">Nama Penjual</label><input type="text" class="form-control-m" name="nama_penjual" placeholder="Nama penjual / pemilik barang..."></div>
       <div class="form-group-m"><label class="form-label-m">Tanggal</label><input type="date" class="form-control-m" style="padding-left:1rem" name="tgl" required></div>
       <div class="form-group-m"><label class="form-label-m">Harga Awal (Rp)</label><input type="number" class="form-control-m" style="padding-left:1rem" name="harga_awal" placeholder="0" min="0" required></div>
       <div class="form-group-m"><label class="form-label-m">Deskripsi</label><textarea class="form-control-m" style="padding-left:1rem;resize:vertical;min-height:80px" name="deskripsi_barang" placeholder="Deskripsi singkat..."></textarea></div>

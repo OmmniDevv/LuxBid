@@ -10,7 +10,7 @@ class Barang extends Model
     protected $primaryKey = 'id_barang';
     public $timestamps = false;
 
-    protected $fillable = ['nama_barang', 'tgl', 'harga_awal', 'deskripsi_barang'];
+    protected $fillable = ['nama_barang', 'tgl', 'harga_awal', 'deskripsi_barang', 'nama_penjual'];
 
     public function gambar()
     {

@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Login Peserta — Lux Bid</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -96,6 +96,9 @@
             <input type="password" name="password" class="form-control-m" placeholder="Masukkan password Anda" autocomplete="current-password" required id="pwd-mas">
             <button type="button" class="eye-toggle" onclick="togglePwd('pwd-mas',this)"><i class="fas fa-eye"></i></button>
           </div>
+          <div style="text-align:right;margin-top:.4rem">
+            <a href="{{ route('lupa.password') }}" style="font-size:.75rem;color:var(--gold);font-weight:600;text-decoration:none"><i class="fas fa-key" style="font-size:.65rem"></i> Lupa Password?</a>
+          </div>
         </div>
         <button type="submit" class="btn-auth"><i class="fas fa-gavel"></i> Masuk & Mulai Lelang</button>
       </form>
@@ -103,8 +106,6 @@
       <a href="{{ route('daftar.masyarakat') }}" class="btn-auth-sec"><i class="fas fa-user-plus"></i> Daftar Akun Baru — Gratis</a>
       <div class="auth-links">
         <a href="{{ route('home') }}">← Beranda</a>
-        <a href="{{ route('lupa.password') }}"><i class="fas fa-key" style="font-size:.7rem"></i> Lupa Password?</a>
-        <a href="{{ route('login.petugas') }}">Masuk sebagai Admin →</a>
       </div>
     </div>
   </div>

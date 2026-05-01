@@ -18,12 +18,13 @@
 [![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.x-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![DomPDF](https://img.shields.io/badge/DomPDF-3.x-E74C3C?style=for-the-badge)](https://github.com/barryvdh/laravel-dompdf)
 [![License](https://img.shields.io/badge/License-MIT-B8860B?style=for-the-badge)](LICENSE)
 
 <br/>
 
-> **LuxBid** adalah platform pelelangan online berbasis web yang dibangun di atas Laravel 13,  
+> **LuxBid** adalah platform pelelangan online berbasis web yang dibangun di atas Laravel 13.
+> Dirancang untuk pengalaman lelang yang transparan, real-time, dan elegan.
 
 <br/>
 
@@ -35,8 +36,6 @@
 
 </div>
 
-<br/>
-
 ## ✦ Daftar Isi
 
 - [Tech Stack](#-tech-stack)
@@ -46,7 +45,7 @@
 - [Konfigurasi Database](#-konfigurasi-database)
 - [Akun Default](#-akun-default)
 - [Changelog](#-changelog)
-- [Credits](#-credits)
+- [Developer](#-developer)
 
 <br/>
 
@@ -56,12 +55,15 @@
 
 | Kategori | Teknologi |
 |----------|-----------|
-| **Backend** | Laravel 13, PHP 8.x |
-| **Database** | MySQL / MariaDB |
-| **Frontend** | Bootstrap, Custom Design System |
-| **Fonts** | Playfair Display, DM Sans (Google Fonts) |
+| **Backend Framework** | Laravel 13 (PHP 8.x) |
+| **Database** | MySQL 8.0 / MariaDB |
+| **Frontend** | HTML5, CSS3 (Custom Design System), JavaScript Vanilla |
+| **Fonts** | Playfair Display, Inter, DM Sans (Google Fonts) |
+| **PDF Generation** | barryvdh/laravel-dompdf v3.x |
 | **Build Tool** | Vite |
-| **Auth** | Session-based (Custom Middleware) |
+| **Auth** | Session-based (Custom Middleware, dua guard terpisah) |
+| **Scheduler** | Laravel Scheduler + Cron |
+| **Icons** | Font Awesome 5 |
 
 <br/>
 
@@ -69,32 +71,38 @@
 
 ## Fitur Utama
 
-<br/>
-
 ### Masyarakat (Peserta Lelang)
 
 | Fitur | Keterangan |
 |-------|------------|
-| 🔐 Autentikasi | Registrasi, login, logout, lupa password via nomor telepon |
-| 🏷️ Lelang Aktif | Lihat semua lelang aktif beserta foto barang |
-| 🔨 Penawaran | Ajukan, edit, dan hapus penawaran harga |
+| 🔐 Autentikasi | Registrasi, login, logout, lupa password via username + nomor telepon |
+| 🏷️ Lelang Aktif | Lihat semua lelang aktif beserta foto barang dan countdown timer |
+| 🔨 Penawaran | Ajukan, edit, dan hapus penawaran — minimum kenaikan Rp 1.000 |
 | ⏱️ Countdown Timer | Timer 6 menit per lelang, reset otomatis saat ada bid baru |
-| 👀 Monitoring | Lihat daftar peserta & penawaran tertinggi per lelang secara real-time |
+| 👀 Monitoring | Daftar peserta & penawaran tertinggi per lelang secara real-time |
 | 📋 Riwayat | Riwayat penawaran lengkap beserta status menang/kalah |
-| 👤 Profil | Edit profil dan ganti password |
-
-<br/>
+| 🧾 Faktur PDF | Download faktur resmi PDF untuk lelang yang dimenangkan |
+| 👤 Profil | Edit profil, ganti password, upload foto profil |
 
 ### Petugas & Administrator
 
 | Fitur | Keterangan |
 |-------|------------|
-| 🔑 Panel Khusus | Login terpisah dari masyarakat |
-| 📦 Manajemen Barang | CRUD barang lelang dengan upload hingga 3 foto |
+| 🔑 Panel Khusus | Login terpisah dari masyarakat via `/login-admin` |
+| 📦 Manajemen Barang | CRUD barang lelang dengan upload hingga 3 foto per barang |
 | ⚡ Sesi Lelang | Buat, buka, dan tutup lelang secara manual |
 | 📡 Monitoring Real-Time | Auto-refresh penawaran setiap 3 detik |
 | 👨‍💼 Manajemen Petugas | Kelola akun petugas (admin only) |
-| 📊 Laporan | Laporan hasil lelang lengkap + cetak PDF |
+| 📊 Laporan PDF | Laporan hasil lelang lengkap — cetak & download PDF |
+| 🗑️ Auto-Hapus Barang | Barang dihapus otomatis 7 hari setelah lelang selesai (scheduler) |
+
+### Halaman Publik
+
+| Halaman | URL |
+|---------|-----|
+| Kontak | `/kontak` |
+| Bantuan & FAQ | `/bantuan` |
+| Kebijakan Privasi | `/kebijakan-privasi` |
 
 <br/>
 
@@ -105,18 +113,25 @@
 ```
 luxbid/
 ├── app/
+│   ├── Console/
+│   │   └── Commands/
+│   │       └── HapusBarangKadaluarsa.php   ← Scheduler harian
 │   ├── Http/
 │   │   ├── Controllers/
+│   │   │   ├── Traits/
+│   │   │   │   └── LelangTrait.php          ← Shared logic (enrich + upload)
 │   │   │   ├── Auth/
 │   │   │   │   ├── MasyarakatAuthController.php
 │   │   │   │   └── PetugasAuthController.php
 │   │   │   ├── HomeController.php
 │   │   │   ├── MasyarakatController.php
 │   │   │   ├── PetugasController.php
-│   │   │   └── AdministratorController.php
+│   │   │   ├── AdministratorController.php
+│   │   │   └── StaticPageController.php
 │   │   └── Middleware/
 │   │       ├── MasyarakatAuth.php
-│   │       └── PetugasAuth.php
+│   │       ├── PetugasAuth.php
+│   │       └── AdminOnly.php
 │   └── Models/
 │       ├── Masyarakat.php
 │       ├── Petugas.php
@@ -127,17 +142,29 @@ luxbid/
 │       └── HistoryLelang.php
 ├── resources/
 │   └── views/
-│       ├── layouts/
 │       ├── auth/
+│       ├── layouts/
 │       ├── masyarakat/
 │       ├── petugas/
-│       └── administrator/
+│       ├── administrator/
+│       ├── static/
+│       └── shared/
+│           ├── laporan_pdf.blade.php        ← Preview laporan browser
+│           ├── laporan_pdf_doc.blade.php    ← Template dompdf laporan
+│           └── faktur_pdf.blade.php         ← Template dompdf faktur
+├── routes/
+│   ├── web.php
+│   └── console.php                          ← Scheduler registration
 ├── public/
 │   ├── assets/
-│   └── uploads/barang/
-└── database/
-    ├── migrations/
-    └── seeders/
+│   └── uploads/
+│       ├── barang/                          ← Foto barang lelang
+│       └── profile/                         ← Foto profil masyarakat
+├── database/
+│   ├── migrations/
+│   └── seeders/
+├── CHANGELOG.md
+└── README.md
 ```
 
 <br/>
@@ -146,25 +173,38 @@ luxbid/
 
 ## Instalasi
 
+### Prasyarat
+
+- PHP >= 8.1 dengan ekstensi: `mbstring`, `openssl`, `xml`, `zip`, `iconv`, `dom`
+- Composer
+- Node.js & npm
+- MySQL 8.0 / MariaDB
+
+### Langkah Instalasi
+
 **1. Clone repository**
 ```bash
 git clone https://github.com/OmmniDevv/luxbid.git
 cd luxbid
 ```
 
-**2. Install dependencies**
+**2. Install dependencies PHP**
 ```bash
 composer install
+```
+
+**3. Install dependencies JavaScript**
+```bash
 npm install
 ```
 
-**3. Setup environment**
+**4. Setup environment**
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-**4. Konfigurasi database di `.env`**
+**5. Konfigurasi `.env`**
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -172,21 +212,40 @@ DB_PORT=3306
 DB_DATABASE=db_lelang
 DB_USERNAME=root
 DB_PASSWORD=your_password
+
+SESSION_DRIVER=file
+CACHE_STORE=file
+APP_TIMEZONE=Asia/Jakarta
 ```
 
-**5. Migrate & seed database**
+**6. Migrate & seed database**
 ```bash
 php artisan migrate
 php artisan db:seed
 ```
 
-**6. Build assets & jalankan server**
+**7. Build assets**
 ```bash
+npm run build
+# atau untuk development:
 npm run dev
+```
+
+**8. Jalankan server**
+```bash
 php artisan serve
 ```
 
-Buka browser dan akses: **http://localhost:8000**
+Buka browser: **http://localhost:8000**
+
+### Setup Scheduler (Production)
+
+Tambahkan baris berikut ke crontab server:
+```bash
+* * * * * cd /path/to/luxbid && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Scheduler akan menjalankan penghapusan barang kadaluarsa setiap hari pukul **01.00 WIB**.
 
 <br/>
 
@@ -197,10 +256,11 @@ Buka browser dan akses: **http://localhost:8000**
 Struktur tabel yang digunakan:
 
 ```
-tb_level          → Level akses (Admin / Petugas)
+tb_level          → Level akses (administrator / petugas)
 tb_petugas        → Akun admin dan petugas
 tb_masyarakat     → Akun peserta lelang
 tb_barang         → Data barang yang dilelang
+tb_gambar_barang  → Foto barang (maks 3 per barang)
 tb_lelang         → Sesi lelang
 history_lelang    → Riwayat penawaran
 ```
@@ -215,7 +275,7 @@ Setelah menjalankan seeder, akun berikut tersedia:
 
 | Role | Username | Password |
 |------|----------|----------|
-| **Admin** | `admin` | `admin123` |
+| **Administrator** | `admin` | `admin123` |
 | **Petugas** | `petugas` | `petugas123` |
 
 > ⚠️ Segera ganti password setelah pertama kali login di production.
@@ -226,84 +286,55 @@ Setelah menjalankan seeder, akun berikut tersedia:
 
 ## Changelog
 
-<br/>
+Lihat riwayat perubahan lengkap di **[CHANGELOG.md](CHANGELOG.md)**.
 
-### [1.1.0] — 2026-05-01
+Versi terbaru: **[1.3.0] — 2026-05-01**
 
-**Ditambahkan**
+Perubahan utama di v1.3.0:
+- Field nama penjual pada pendataan barang
+- Nama penjual tampil di laporan, faktur PDF, dan detail lelang
 
-| Fitur | Keterangan |
-|-------|------------|
-| **Halaman Profil** | `/masyarakat/profile` — upload foto profil, edit data diri, ganti password |
-| **Dark / Light Mode** | Toggle sun/moon di semua navbar, persisten via `localStorage` tanpa flash |
-| **Countdown Timer** | Timer 6 menit per lelang, reset saat ada bid baru, auto-close via `/check-timer` |
-| **Daftar Peserta** | List penawar di detail modal, diurutkan dari penawaran tertinggi |
-| **Branding** | Nama "Lux Bid" two-tone, logo baru, footer "Made by TEAM HUNTERS" |
-
-**Diperbaiki**
-
-| Bug | Solusi |
-|-----|--------|
-| Dark mode tidak aktif di halaman auth | `modern.css` ditambahkan ke semua halaman auth |
-| Ikon gembok & eye toggle tidak center di profile | `position:absolute; top:50%; transform:translateY(-50%)` |
-| `petugas/aktivasi` 500 error | `$lelang_aktif` diteruskan ke partial `isi.blade.php` |
-| Bidding masih bisa setelah lelang berakhir | Backend guard + frontend disable tombol saat timer = 0 |
-
-<br/>
-
-### [1.0.0] — 2026-04-30
-
-**Fitur Baru**
-
-| Fitur | Keterangan |
-|-------|------------|
-| **Countdown Timer Lelang** | Timer 6 menit per lelang, reset saat bid baru, tampil di card & modal |
-| **Auto-Close Lelang** | Pemenang otomatis ditetapkan saat timer habis via `/check-timer` |
-| **Daftar Penawar** | Detail modal tampilkan semua penawar + badge peringkat + highlight pemenang |
-| **Minimum Bid** | Minimum bid = `penawaran_tertinggi + 1` untuk cegah bid sama |
-
-**🔄 Konversi ke Laravel**
-
-- Native PHP → Laravel 13 MVC, `koneksi.php` → Eloquent ORM
-- `$_SESSION` → Laravel `session()`, file-based routing → named routes
-- `include layouts` → Blade `@extends/@yield`, raw `mysqli_query` → Eloquent models
-- Auth dibagi dua: middleware `masyarakat.auth` dan `petugas.auth`
-
-**Bug Fix**
-
-| Bug | Solusi |
-|-----|--------|
-| Modal edit penawaran merusak layout tabel | Semua modal dipindahkan ke luar loop tabel |
-| Barang baru otomatis membuat lelang | Pembuatan barang & lelang dipisah sepenuhnya |
-| Sessions table missing | `SESSION_DRIVER` diubah ke `file` |
-| Link hapus petugas error | Diganti `<form method="post">` + CSRF token |
-
-> Lihat detail lengkap di [CHANGELOG.md](CHANGELOG.md)
+Perubahan utama di v1.2.0:
+- Faktur PDF untuk pemenang lelang
+- Laporan PDF dengan dompdf
+- Lupa password via username + nomor telepon
+- Minimum bid Rp 1.000
+- Penghapusan barang otomatis (scheduler)
+- Halaman statis: Kontak, Bantuan, Kebijakan Privasi
+- Timezone Asia/Jakarta
 
 <br/>
 
 ---
 
-## Credits
+## Developer
 
 <div align="center">
 
 <br/>
 
-**Dibangun dengan ❤️ oleh Team Hunters**
+**Dibangun dengan ❤️ oleh TEAM HUNTERS**
 
-### TEAM HUNTERS
+<br/>
 
 | | |
-|--|--|
-| **GitHub** | [@OmmniDevv](https://github.com/OmmniDevv) |
+|:--:|:--|
+| <img src="https://github.com/OmmniDevv.png" width="60" style="border-radius:50%"> | **OmmniDevv** · Lead Developer<br/>[![GitHub](https://img.shields.io/badge/GitHub-OmmniDevv-181717?style=flat&logo=github)](https://github.com/OmmniDevv) |
+
+<br/>
+
+| Info | Detail |
+|------|--------|
+| **Tim** | TEAM HUNTERS |
 | **Kelas** | XI PPLG 2 |
-| **Project** | Laravel 13 |
+| **Sekolah** | SMKN 7 Baleendah, Kab. Bandung |
+| **Tahun** | 2026 |
+| **GitHub** | [github.com/OmmniDevv](https://github.com/OmmniDevv) |
 
 <br/>
 
 ---
 
-<sub>© 2026 LuxBid · TEAM HUNTERS · All Rights Reserved</sub>
+<sub>© 2026 LuxBid · TEAM HUNTERS · MIT License · All Rights Reserved</sub>
 
 </div>

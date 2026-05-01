@@ -1,6 +1,6 @@
 
 <!DOCTYPE html><html lang="id"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Laporan Lelang — Lux Bid</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -17,15 +17,16 @@ tr:nth-child(even){background:#fafafa}
 <h1>Laporan Hasil Lelang — Lux Bid</h1>
 <p>Dicetak pada: {{ now()->format('d M Y H:i') }}</p>
 <table>
-  <thead><tr><th>#</th><th>Nama Barang</th><th>Tanggal</th><th>Pemenang</th><th>Harga Awal</th><th>Harga Akhir</th><th>Status</th></tr></thead>
+  <thead><tr><th>#</th><th>Nama Barang</th><th>Penjual</th><th>Tanggal</th><th>Pemenang</th><th>Harga Awal</th><th>Harga Akhir</th><th>Status</th></tr></thead>
   <tbody>
     @foreach($rows as $i=>$d)
     <tr>
       <td>{{ $i+1 }}</td>
-      <td>{{ $d->barang->nama_barang }}</td>
+      <td>{{ $d->barang->nama_barang ?? '[Data tidak tersedia]' }}</td>
+      <td>{{ $d->barang->nama_penjual ?? '—' }}</td>
       <td>{{ $d->tgl_lelang }}</td>
       <td>{{ $d->_pemenang ?? '—' }}</td>
-      <td>Rp {{ number_format($d->barang->harga_awal) }}</td>
+      <td>{{ $d->barang ? 'Rp '.number_format($d->barang->harga_awal) : '—' }}</td>
       <td>{{ $d->_harga_tertinggi ? 'Rp '.number_format($d->_harga_tertinggi) : '—' }}</td>
       <td>{{ ucfirst($d->status) }}</td>
     </tr>

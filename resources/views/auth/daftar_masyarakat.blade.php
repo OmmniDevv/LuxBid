@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Daftar Akun — Lux Bid</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -110,6 +110,13 @@
               <input type="tel" name="telp" class="form-control-m" placeholder="08xx atau +62xx" pattern="^(?:\+62|08)[1-9][0-9]{7,11}$" required>
             </div>
             <div class="form-hint">Format: 08xx-xxxx-xxxx atau +62xxx-xxxx-xxxx</div>
+          </div>
+          <div class="form-group-m">
+            <label class="form-label-m">Email <span style="font-weight:400;color:var(--ink-l)">(opsional)</span></label>
+            <div class="input-wrap">
+              <i class="fas fa-envelope input-icon"></i>
+              <input type="email" name="email" class="form-control-m" placeholder="contoh@email.com">
+            </div>
           </div>
           <button type="submit" class="btn-reg"><i class="fas fa-user-plus"></i> Daftar Sekarang — Gratis</button>
         </form>

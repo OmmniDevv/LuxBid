@@ -13,6 +13,10 @@
 .profile-pw-wrap:focus-within .input-icon{color:var(--gold)}
 .profile-pw-wrap .eye-toggle{position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;padding:0;cursor:pointer;color:var(--ink-l);font-size:1.1rem;line-height:1;display:flex;align-items:center;justify-content:center;width:20px;height:20px;transition:color .2s}
 .profile-pw-wrap .eye-toggle:hover,.profile-pw-wrap .eye-toggle.active{color:var(--gold)}
+@media(max-width:600px){
+  .profile-foto-section{flex-direction:column;align-items:center;text-align:center}
+  .profile-foto-wrap{margin:0 auto}
+}
 </style>
 @endpush
 @section('content')
@@ -23,7 +27,7 @@
 {{-- Foto Profil --}}
 <div class="card-m fade-up" style="margin-bottom:1.5rem">
   <div class="card-m-header"><div class="card-m-title"><span>📷</span> Foto Profil</div></div>
-  <div class="card-m-body" style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
+  <div class="card-m-body profile-foto-section" style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
     @if(session('info_profile'))
       <div class="alert-m alert-{{ session('info_type','success') }}-m" style="width:100%">
         <span>{{ session('info_profile') }}</span>
