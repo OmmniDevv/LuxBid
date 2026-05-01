@@ -26,7 +26,7 @@
               @if(session('username')==$d->username)<span style="font-size:.65rem;background:var(--gold-p);color:var(--gold);border:1px solid var(--gold-ln);padding:.1rem .45rem;border-radius:100px;font-weight:600">Anda</span>@endif
             </div>
           </td>
-          <td style="color:var(--ink-m);font-family:monospace;font-size:.85rem">@{{ $d->username }}</td>
+          <td style="color:var(--ink-m);font-family:monospace;font-size:.85rem">{{ $d->username }}</td>
           <td>@if($d->id_level==1)<span class="badge-m badge-info"><i class="fas fa-crown" style="font-size:.6rem"></i> Admin</span>@else<span class="badge-m badge-pending">Petugas</span>@endif</td>
           <td>
             <div style="display:flex;gap:.4rem">
