@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{{ asset('assets/modern.css') }}">
   <link rel="icon" href="{{ asset('assets/favicon.jpeg') }}">
   <style>
@@ -55,7 +56,7 @@
 <script>(function(){var d=localStorage.getItem('theme')==='dark';document.documentElement.setAttribute('data-theme',d?'dark':'light');})()</script>
 <div class="auth-wrap">
   <a href="{{ route('login.masyarakat') }}" class="auth-back"><i class="fas fa-arrow-left"></i> Kembali ke Login</a>
-  <div class="auth-icon">🔑</div>
+  <div class="auth-icon"><i class="bi bi-key"></i></div>
   <h1 class="auth-title">Lupa Password</h1>
   <p class="auth-sub">Masukkan username dan nomor telepon terdaftar untuk mereset password Anda.</p>
 
@@ -95,7 +96,7 @@
 
     @elseif($step == 3)
     <div class="success-box">
-      <div class="big-icon">🎉</div>
+      <div class="big-icon"><i class="bi bi-check-circle"></i></div>
       <h3>Password Berhasil Direset!</h3>
       <p style="margin-bottom:1.25rem">Password baru kamu adalah:</p>
       <div style="display:flex;align-items:center;gap:.5rem;background:var(--gold-p);border:1.5px solid var(--gold-ln);border-radius:9px;padding:.75rem 1rem;margin-bottom:.75rem">

@@ -28,7 +28,7 @@
 @if(request('info')=='update')<div class="alert-m alert-success-m fade-up"><i class="fas fa-check-circle alert-m-icon"></i><span>Data barang berhasil diperbarui.</span><button class="alert-close" onclick="this.closest('.alert-m').remove()">×</button></div>@endif
 
 <div class="card-m fade-up delay-1">
-  <div class="card-m-header"><div class="card-m-title"><span>📦</span> Daftar Barang Lelang</div></div>
+  <div class="card-m-header"><div class="card-m-title"><i class="bi bi-box-seam"></i> Daftar Barang Lelang</div></div>
   <div style="overflow-x:auto">
     <table class="table-m">
       <thead><tr><th>#</th><th>Foto</th><th>Nama Barang</th><th>Penjual</th><th>Tanggal</th><th>Harga Awal</th><th>Deskripsi</th><th>Aksi</th></tr></thead>
@@ -54,7 +54,7 @@
           </td>
         </tr>
         @empty
-        <tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--ink-m)"><div style="font-size:2rem;opacity:.25;margin-bottom:.5rem">📦</div>Belum ada data barang</td></tr>
+        <tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--ink-m)"><div style="font-size:2rem;opacity:.25;margin-bottom:.5rem"><i class="bi bi-box-seam"></i></div>Belum ada data barang</td></tr>
         @endforelse
       </tbody>
     </table>
@@ -65,7 +65,7 @@
 @php $imgs = $all_gambar[$d->id_barang] ?? collect([]); @endphp
 <div class="modal-m-overlay" id="modal-hapus{{ $d->id_barang }}">
   <div class="modal-m"><div class="modal-m-header"><span class="modal-m-title">Konfirmasi Hapus</span><button class="modal-m-close" onclick="closeModal('modal-hapus{{ $d->id_barang }}')">×</button></div>
-  <div class="modal-m-body"><div style="text-align:center;padding:1rem 0"><div style="font-size:2.5rem;margin-bottom:.75rem">🗑️</div><p style="font-size:.9rem;color:var(--ink-s)">Yakin ingin menghapus barang <strong>{{ $d->nama_barang }}</strong>?</p></div></div>
+  <div class="modal-m-body"><div style="text-align:center;padding:1rem 0"><div style="font-size:2.5rem;margin-bottom:.75rem"><i class="bi bi-trash"></i></div><p style="font-size:.9rem;color:var(--ink-s)">Yakin ingin menghapus barang <strong>{{ $d->nama_barang }}</strong>?</p></div></div>
   <div class="modal-m-footer"><button class="btn-m btn-outline-m" onclick="closeModal('modal-hapus{{ $d->id_barang }}')">Batal</button><a href="{{ route('petugas.barang.hapus', ['id_barang'=>$d->id_barang]) }}" class="btn-m btn-danger-m">Ya, Hapus</a></div></div>
 </div>
 <div class="modal-m-overlay modal-tall" id="modal-ubah{{ $d->id_barang }}">

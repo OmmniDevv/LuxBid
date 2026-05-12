@@ -164,6 +164,7 @@ luxbid/
 ├── database/
 │   ├── migrations/
 │   └── seeders/
+├── scheduler.bat                            ← Windows Task Scheduler script
 ├── CHANGELOG.md
 └── README.md
 ```
@@ -180,6 +181,8 @@ luxbid/
 - Composer
 - Node.js & npm
 - MySQL 8.0 / MariaDB
+
+> **Catatan Windows:** Jika menggunakan Laragon/XAMPP, pastikan PHP 8.3+ tersedia. Laravel 13 membutuhkan PHP ^8.3, namun dapat diinstall dengan `composer install --ignore-platform-reqs` jika menggunakan PHP 8.5+.
 
 ### Langkah Instalasi
 
@@ -241,12 +244,34 @@ Buka browser: **http://localhost:8000**
 
 ### Setup Scheduler (Production)
 
+#### Linux / macOS
+
 Tambahkan baris berikut ke crontab server:
 ```bash
 * * * * * cd /path/to/luxbid && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-Scheduler akan menjalankan penghapusan barang kadaluarsa setiap hari pukul **01.00 WIB**.
+#### Windows (Laragon / XAMPP)
+
+**1. Buat file `scheduler.bat` di root proyek:**
+```batch
+@echo off
+cd /d "C:\path\to\luxbid"
+php artisan schedule:run >> NUL 2>&1
+```
+
+**2. Setup Windows Task Scheduler:**
+```bash
+schtasks /create /tn "LuxBid Scheduler" /tr "C:\path\to\luxbid\scheduler.bat" /sc minute /f
+```
+
+Atau via GUI Task Scheduler:
+- Buka **Task Scheduler** → Create Basic Task
+- Name: `LuxBid Scheduler`
+- Trigger: Daily, repeat every **1 minute**
+- Action: Start a program → `C:\path\to\luxbid\scheduler.bat`
+
+Scheduler akan menjalankan penghapusan barang kadaluarsa setiap hari pukul **01:00 WIB**.
 
 <br/>
 

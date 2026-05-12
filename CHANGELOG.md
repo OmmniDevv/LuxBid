@@ -5,6 +5,59 @@
 
 ---
 
+## [1.4.2] — 2026-05-12
+
+### 🎨 Refactor UI
+
+| Aspek | Perubahan |
+|-------|-----------|
+| **Emoji Unicode → Bootstrap Icons** | Semua emoji unicode di UI diganti dengan Bootstrap Icons untuk tampilan yang lebih konsisten dan profesional |
+| **Bootstrap Icons CDN** | Ditambahkan ke semua layout (masyarakat, petugas, home, auth, static pages) |
+
+### 📝 Detail Perubahan Icon
+
+| Halaman | Emoji Lama | Icon Baru |
+|---------|------------|-----------|
+| **Home (Landing Page)** | 📝🔍💰🏆🔒⚡📊📱👤 | bi-pencil-square, bi-search, bi-cash-coin, bi-trophy, bi-shield-lock, bi-lightning-charge, bi-bar-chart, bi-phone, bi-person |
+| **Auth (Login/Register)** | 👤🛡️🔑🎉📝 | bi-person-circle, bi-shield-shaded, bi-key, bi-check-circle, bi-pencil-square |
+| **Masyarakat Dashboard** | 🏆📋✅🎯🔨📦🔍✏️🔒📷📊🏅⚡ | bi-trophy, bi-card-list, bi-check-circle, bi-bullseye, bi-hammer, bi-box-seam, bi-search, bi-pencil-square, bi-lock, bi-camera, bi-bar-chart-line, bi-award, bi-lightning-charge |
+| **Petugas/Admin Panel** | 📦⚡💰👥📊🗑️🏆🔓🔒✅⚠️📋📡 | bi-box-seam, bi-lightning-charge, bi-cash-coin, bi-people, bi-bar-chart, bi-trash, bi-trophy, bi-unlock, bi-lock, bi-check-circle, bi-exclamation-triangle, bi-card-list, bi-broadcast |
+| **Halaman Kontak** | 💬📧🏢🕐 | bi-chat-dots, bi-envelope-at, bi-building, bi-clock |
+
+### ✨ Peningkatan
+
+| Fitur | Keterangan |
+|-------|------------|
+| **Konsistensi Visual** | Semua icon menggunakan Bootstrap Icons dengan style yang seragam |
+| **Performa** | Icon vector lebih ringan dan scalable dibanding emoji unicode |
+| **Aksesibilitas** | Icon lebih mudah dibaca di berbagai device dan browser |
+
+---
+
+## [1.4.1] — 2026-05-12
+
+### 🐛 Diperbaiki
+
+| Bug | Solusi |
+|-----|--------|
+| **Scheduler command error (foreign key)** | Command `lelang:hapus-barang-kadaluarsa` gagal karena foreign key constraint. Diperbaiki dengan menghapus data dalam urutan: `history_lelang` → `tb_lelang` → `gambar_barang` → `tb_barang` |
+
+### 📚 Dokumentasi
+
+| File | Perubahan |
+|------|-----------|
+| **README.md** | Tambah section "Setup Scheduler (Production)" dengan instruksi lengkap untuk Linux/macOS dan Windows (Laragon/XAMPP). Tambah catatan Windows di prasyarat tentang PHP 8.3+ requirement. Tambah `scheduler.bat` di struktur proyek |
+| **INSTALLATION.md** | Tambah Step 9 — Setup Scheduler dengan instruksi detail Windows Task Scheduler (otomatis & manual via GUI). Tambah catatan Windows di requirements tentang PHP version compatibility. Tambah command verifikasi scheduler |
+| **scheduler.bat** | File batch baru untuk Windows Task Scheduler — menjalankan `php artisan schedule:run` setiap menit |
+
+### ⚙️ Infrastruktur
+
+| Komponen | Keterangan |
+|----------|------------|
+| **Windows Task Scheduler** | Setup otomatis via `schtasks` command untuk menjalankan Laravel scheduler setiap menit di Windows environment |
+
+---
+
 ## [1.4.0] — 2026-05-02
 
 ### ✨ Ditambahkan

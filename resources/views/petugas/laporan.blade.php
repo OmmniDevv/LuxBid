@@ -10,13 +10,13 @@
   </div>
 </div>
 <div class="stat-grid fade-up delay-1">
-  <div class="stat-card"><div class="stat-card-ico">✅</div><div class="stat-card-n">{{ $total_selesai }}</div><div class="stat-card-l">Lelang Selesai</div></div>
-  <div class="stat-card"><div class="stat-card-ico">⚡</div><div class="stat-card-n">{{ $total_aktif }}</div><div class="stat-card-l">Lelang Aktif</div></div>
-  <div class="stat-card"><div class="stat-card-ico">💰</div><div class="stat-card-n">{{ $total_penawaran }}</div><div class="stat-card-l">Total Penawaran</div></div>
-  <div class="stat-card"><div class="stat-card-ico">🏆</div><div class="stat-card-n" style="font-size:1.3rem">Rp {{ number_format($total_nilai,0,',','.') }}</div><div class="stat-card-l">Nilai Transaksi</div></div>
+  <div class="stat-card"><div class="stat-card-ico"><i class="bi bi-check-circle"></i></div><div class="stat-card-n">{{ $total_selesai }}</div><div class="stat-card-l">Lelang Selesai</div></div>
+  <div class="stat-card"><div class="stat-card-ico"><i class="bi bi-lightning-charge"></i></div><div class="stat-card-n">{{ $total_aktif }}</div><div class="stat-card-l">Lelang Aktif</div></div>
+  <div class="stat-card"><div class="stat-card-ico"><i class="bi bi-cash-coin"></i></div><div class="stat-card-n">{{ $total_penawaran }}</div><div class="stat-card-l">Total Penawaran</div></div>
+  <div class="stat-card"><div class="stat-card-ico"><i class="bi bi-trophy"></i></div><div class="stat-card-n" style="font-size:1.3rem">Rp {{ number_format($total_nilai,0,',','.') }}</div><div class="stat-card-l">Nilai Transaksi</div></div>
 </div>
 <div class="card-m fade-up delay-2">
-  <div class="card-m-header"><div class="card-m-title"><span>📊</span> Data Hasil Lelang</div></div>
+  <div class="card-m-header"><div class="card-m-title"><i class="bi bi-bar-chart"></i> Data Hasil Lelang</div></div>
   <div style="overflow-x:auto">
     <table class="table-m">
       <thead><tr><th>#</th><th>Nama Barang</th><th>Penjual</th><th>Tanggal Lelang</th><th>Pemenang</th><th>Harga Awal</th><th>Harga Akhir</th><th>Status</th></tr></thead>

@@ -26,7 +26,7 @@
 
 {{-- Foto Profil --}}
 <div class="card-m fade-up" style="margin-bottom:1.5rem">
-  <div class="card-m-header"><div class="card-m-title"><span>📷</span> Foto Profil</div></div>
+  <div class="card-m-header"><div class="card-m-title"><i class="bi bi-camera"></i> Foto Profil</div></div>
   <div class="card-m-body profile-foto-section" style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
     @if(session('info_profile'))
       <div class="alert-m alert-{{ session('info_type','success') }}-m" style="width:100%">
@@ -56,7 +56,7 @@
 
 {{-- Edit Profil --}}
 <div class="card-m fade-up delay-1" style="margin-bottom:1.5rem">
-  <div class="card-m-header"><div class="card-m-title"><span>✏️</span> Edit Profil</div></div>
+  <div class="card-m-header"><div class="card-m-title"><i class="bi bi-pencil-square"></i> Edit Profil</div></div>
   <div class="card-m-body">
     <form method="post" action="{{ route('masyarakat.profile.update') }}">
       @csrf
@@ -93,7 +93,7 @@
 
 {{-- Ganti Password --}}
 <div class="card-m fade-up delay-2">
-  <div class="card-m-header"><div class="card-m-title"><span>🔒</span> Ganti Password</div></div>
+  <div class="card-m-header"><div class="card-m-title"><i class="bi bi-lock"></i> Ganti Password</div></div>
   <div class="card-m-body">
     @if(session('info_password'))
       <div class="alert-m alert-{{ session('info_type_pw','success') }}-m" style="margin-bottom:1rem">
