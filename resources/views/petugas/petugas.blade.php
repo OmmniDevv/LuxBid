@@ -46,7 +46,7 @@
 @foreach($tb_petugas as $d)
 <div class="modal-m-overlay" id="modal-hapus{{ $d->id_petugas }}">
   <div class="modal-m"><div class="modal-m-header"><span class="modal-m-title">Hapus Petugas</span><button class="modal-m-close" onclick="closeModal('modal-hapus{{ $d->id_petugas }}')">×</button></div>
-  <div class="modal-m-body" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;margin-bottom:.75rem">⚠️</div><p style="font-size:.9rem;color:var(--ink-s)">Hapus akun <strong>{{ $d->nama_petugas }}</strong>?</p></div>
+  <div class="modal-m-body" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;margin-bottom:.75rem"><i class="bi bi-exclamation-triangle"></i></div><p style="font-size:.9rem;color:var(--ink-s)">Hapus akun <strong>{{ $d->nama_petugas }}</strong>?</p></div>
   <div class="modal-m-footer"><button class="btn-m btn-outline-m" onclick="closeModal('modal-hapus{{ $d->id_petugas }}')">Batal</button><form method="post" action="{{ route('administrator.petugas.hapus') }}" style="display:inline">@csrf<input type="hidden" name="id_petugas" value="{{ $d->id_petugas }}"><button type="submit" class="btn-m btn-danger-m">Ya, Hapus</button></form></div></div>
 </div>
 <div class="modal-m-overlay" id="modal-ubah{{ $d->id_petugas }}">

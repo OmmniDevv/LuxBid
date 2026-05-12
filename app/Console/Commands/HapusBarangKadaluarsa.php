@@ -30,6 +30,12 @@ class HapusBarangKadaluarsa extends Command
         }
 
         foreach ($id_barangs as $id_barang) {
+            // Hapus history lelang terkait barang
+            \App\Models\HistoryLelang::where('id_barang', $id_barang)->delete();
+            
+            // Hapus lelang terkait barang
+            Lelang::where('id_barang', $id_barang)->delete();
+            
             // Hapus file foto fisik
             GambarBarang::where('id_barang', $id_barang)->each(function ($g) {
                 @unlink(public_path("uploads/barang/{$g->nama_file}"));

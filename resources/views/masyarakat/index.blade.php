@@ -2,37 +2,37 @@
 @section('content')
 <div class="page-header fade-up">
   <div>
-    <h1 class="page-title">Selamat Datang, {{ session('username') }}! 👋</h1>
+    <h1 class="page-title">Selamat Datang, {{ session('username') }}!</h1>
     <p class="page-sub">Anda sudah login sebagai peserta lelang. Mulai ajukan penawaran sekarang.</p>
   </div>
 </div>
 
 <div class="stat-grid fade-up delay-1">
-  <div class="stat-card"><div class="stat-card-ico">🏆</div><div class="stat-card-n">{{ $jumlah_aktif }}</div><div class="stat-card-l">Lelang Aktif</div></div>
-  <div class="stat-card"><div class="stat-card-ico">📋</div><div class="stat-card-n">{{ $jumlah_penawaran }}</div><div class="stat-card-l">Penawaran Saya</div></div>
-  <div class="stat-card"><div class="stat-card-ico">✅</div><div class="stat-card-n">Aktif</div><div class="stat-card-l">Status Akun</div></div>
+  <div class="stat-card"><div class="stat-card-ico"><i class="bi bi-trophy"></i></div><div class="stat-card-n">{{ $jumlah_aktif }}</div><div class="stat-card-l">Lelang Aktif</div></div>
+  <div class="stat-card"><div class="stat-card-ico"><i class="bi bi-card-list"></i></div><div class="stat-card-n">{{ $jumlah_penawaran }}</div><div class="stat-card-l">Penawaran Saya</div></div>
+  <div class="stat-card"><div class="stat-card-ico"><i class="bi bi-check-circle"></i></div><div class="stat-card-n">Aktif</div><div class="stat-card-l">Status Akun</div></div>
 </div>
 
 <div class="card-m fade-up delay-2" style="margin-bottom:1.5rem">
   <div class="card-m-header">
-    <div class="card-m-title"><span>🎯</span> Panduan Cepat</div>
+    <div class="card-m-title"><i class="bi bi-bullseye"></i> Panduan Cepat</div>
   </div>
   <div class="card-m-body">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem">
       <a href="{{ route('masyarakat.penawaran') }}" style="text-decoration:none">
         <div style="background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:var(--rs);padding:1.25rem;transition:transform .22s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
-          <div style="font-size:1.75rem;margin-bottom:.5rem">🔨</div>
+          <div style="font-size:1.75rem;margin-bottom:.5rem"><i class="bi bi-hammer"></i></div>
           <div style="font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:.2rem">Lihat & Ikuti Lelang</div>
           <div style="font-size:.78rem;color:var(--ink-m)">Temukan barang lelang aktif dan ajukan penawaran terbaik Anda</div>
         </div>
       </a>
       <div style="background:var(--cream);border:1px solid var(--cream-dd);border-radius:var(--rs);padding:1.25rem">
-        <div style="font-size:1.75rem;margin-bottom:.5rem">📊</div>
+        <div style="font-size:1.75rem;margin-bottom:.5rem"><i class="bi bi-bar-chart-line"></i></div>
         <div style="font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:.2rem">Pantau Penawaran</div>
         <div style="font-size:.78rem;color:var(--ink-m)">Lihat histori dan status penawaran Anda di halaman Penawaran</div>
       </div>
       <div style="background:var(--cream);border:1px solid var(--cream-dd);border-radius:var(--rs);padding:1.25rem">
-        <div style="font-size:1.75rem;margin-bottom:.5rem">🏅</div>
+        <div style="font-size:1.75rem;margin-bottom:.5rem"><i class="bi bi-award"></i></div>
         <div style="font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:.2rem">Menangkan Lelang</div>
         <div style="font-size:.78rem;color:var(--ink-m)">Penawar tertinggi saat waktu habis menjadi pemenang resmi</div>
       </div>
@@ -45,13 +45,13 @@
 
 <div class="card-m fade-up delay-3">
   <div class="card-m-header">
-    <div class="card-m-title"><span>⚡</span> Lelang Aktif Saat Ini</div>
+    <div class="card-m-title"><i class="bi bi-lightning-charge"></i> Lelang Aktif Saat Ini</div>
     <a href="{{ route('masyarakat.penawaran') }}" class="btn-m btn-outline-m btn-sm-m">Lihat Semua →</a>
   </div>
   <div class="card-m-body" style="padding:1rem">
     @if($rows->isEmpty())
       <div style="text-align:center;padding:2.5rem;color:var(--ink-m)">
-        <div style="font-size:2rem;opacity:.3;margin-bottom:.5rem">📦</div>
+        <div style="font-size:2rem;opacity:.3;margin-bottom:.5rem"><i class="bi bi-box-seam"></i></div>
         <div style="font-size:.88rem">Belum ada lelang yang sedang berjalan.</div>
       </div>
     @else
@@ -63,7 +63,7 @@
             @if($l->foto)
               <img src="{{ asset('uploads/barang/'.$l->foto) }}" style="width:90px;height:90px;object-fit:cover;display:block" alt="{{ $l->barang->nama_barang }}">
             @else
-              <div style="width:90px;height:90px;background:var(--cream-d);display:flex;align-items:center;justify-content:center;font-size:2rem">📦</div>
+              <div style="width:90px;height:90px;background:var(--cream-d);display:flex;align-items:center;justify-content:center;font-size:2rem"><i class="bi bi-box-seam"></i></div>
             @endif
           </div>
           <div style="flex:1;min-width:0;padding:.75rem 0">

@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{{ asset('assets/modern.css') }}">
   <link rel="icon" href="{{ asset('assets/favicon.jpeg') }}">
   <style>
@@ -78,7 +79,7 @@
   <div class="split-right">
     <div class="auth-box">
       <div class="auth-header">
-        <div class="auth-icon">🛡️</div>
+        <div class="auth-icon"><i class="bi bi-shield-shaded"></i></div>
         <h1 class="auth-title">Masuk sebagai Admin</h1>
         <p class="auth-sub">Gunakan kredensial resmi untuk mengakses panel</p>
       </div>

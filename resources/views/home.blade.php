@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="{{ asset('assets/modern.css') }}">
 <link rel="icon" href="{{ asset('assets/favicon.jpeg') }}">
 <style>
@@ -239,10 +240,10 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
     <h2 class="ttl rv">Cara Kerja Lelang</h2>
     <p class="dsc rv">Hanya beberapa langkah untuk mulai mengikuti lelang dan mendapatkan barang incaran Anda.</p>
     <div class="steps">
-      <div class="step rv"><div class="step-n">01</div><div class="step-i">📝</div><h4>Daftar Akun</h4><p>Buat akun gratis dengan data diri. Verifikasi dilakukan cepat oleh petugas kami.</p></div>
-      <div class="step rv"><div class="step-n">02</div><div class="step-i">🔍</div><h4>Cari Barang Lelang</h4><p>Telusuri daftar barang yang sedang dilelang. Filter sesuai kategori dan harga.</p></div>
-      <div class="step rv"><div class="step-n">03</div><div class="step-i">💰</div><h4>Ajukan Penawaran</h4><p>Masukkan nominal penawaran Anda. Pantau terus karena waktu lelang terbatas!</p></div>
-      <div class="step rv"><div class="step-n">04</div><div class="step-i">🏆</div><h4>Menang &amp; Selesai</h4><p>Penawar tertinggi saat waktu habis menjadi pemenang dan proses selesai.</p></div>
+      <div class="step rv"><div class="step-n">01</div><div class="step-i"><i class="bi bi-pencil-square"></i></div><h4>Daftar Akun</h4><p>Buat akun gratis dengan data diri. Verifikasi dilakukan cepat oleh petugas kami.</p></div>
+      <div class="step rv"><div class="step-n">02</div><div class="step-i"><i class="bi bi-search"></i></div><h4>Cari Barang Lelang</h4><p>Telusuri daftar barang yang sedang dilelang. Filter sesuai kategori dan harga.</p></div>
+      <div class="step rv"><div class="step-n">03</div><div class="step-i"><i class="bi bi-cash-coin"></i></div><h4>Ajukan Penawaran</h4><p>Masukkan nominal penawaran Anda. Pantau terus karena waktu lelang terbatas!</p></div>
+      <div class="step rv"><div class="step-n">04</div><div class="step-i"><i class="bi bi-trophy"></i></div><h4>Menang &amp; Selesai</h4><p>Penawar tertinggi saat waktu habis menjadi pemenang dan proses selesai.</p></div>
     </div>
   </div>
 </section>
@@ -254,10 +255,10 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
     <p class="dsc rv">Dirancang untuk pengalaman lelang yang transparan, aman, dan menyenangkan.</p>
     <div class="ftgrid">
       <div class="ftlist">
-        <div class="fti rv"><div class="fti-ic">🔒</div><div><h5>Keamanan Terjamin</h5><p>Data &amp; transaksi Anda terlindungi. Semua pengguna terverifikasi oleh petugas resmi.</p></div></div>
-        <div class="fti rv"><div class="fti-ic">⚡</div><div><h5>Penawaran Real-Time</h5><p>Lihat penawaran terbaru secara langsung dan jangan sampai kalah dari pesaing.</p></div></div>
-        <div class="fti rv"><div class="fti-ic">📊</div><div><h5>Riwayat Transparan</h5><p>Semua histori penawaran dan transaksi tercatat dan dapat diakses kapan saja.</p></div></div>
-        <div class="fti rv"><div class="fti-ic">📱</div><div><h5>Akses dari Mana Saja</h5><p>Platform responsif, nyaman digunakan dari HP, tablet, maupun komputer.</p></div></div>
+        <div class="fti rv"><div class="fti-ic"><i class="bi bi-shield-lock"></i></div><div><h5>Keamanan Terjamin</h5><p>Data &amp; transaksi Anda terlindungi. Semua pengguna terverifikasi oleh petugas resmi.</p></div></div>
+        <div class="fti rv"><div class="fti-ic"><i class="bi bi-lightning-charge"></i></div><div><h5>Penawaran Real-Time</h5><p>Lihat penawaran terbaru secara langsung dan jangan sampai kalah dari pesaing.</p></div></div>
+        <div class="fti rv"><div class="fti-ic"><i class="bi bi-bar-chart"></i></div><div><h5>Riwayat Transparan</h5><p>Semua histori penawaran dan transaksi tercatat dan dapat diakses kapan saja.</p></div></div>
+        <div class="fti rv"><div class="fti-ic"><i class="bi bi-phone"></i></div><div><h5>Akses dari Mana Saja</h5><p>Platform responsif, nyaman digunakan dari HP, tablet, maupun komputer.</p></div></div>
       </div>
       <div class="mock rv">
         <div class="mock-bar">
@@ -384,7 +385,7 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);ove
     <p class="dsc rv">Pilih jenis akun sesuai peran Anda untuk mulai menggunakan platform pelelangan daring.</p>
     <div style="max-width:480px;margin:3rem auto 0">
       <div class="card-ld c-mas rv" style="padding:2.75rem">
-        <div class="card-ico">👤</div>
+        <div class="card-ico"><i class="bi bi-person"></i></div>
         <h3>Masyarakat / Peserta</h3>
         <p>Ikuti lelang, ajukan penawaran, dan menangkan barang incaran Anda.</p>
         <ul class="chk">

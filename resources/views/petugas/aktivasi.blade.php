@@ -10,7 +10,7 @@
 @if(request('info')=='update')<div class="alert-m alert-success-m fade-up"><i class="fas fa-check-circle alert-m-icon"></i><span>Status lelang berhasil diperbarui.</span><button class="alert-close" onclick="this.closest('.alert-m').remove()">×</button></div>@endif
 
 <div class="card-m fade-up delay-1">
-  <div class="card-m-header"><div class="card-m-title"><span>⚡</span> Daftar Sesi Lelang</div></div>
+  <div class="card-m-header"><div class="card-m-title"><i class="bi bi-lightning-charge"></i> Daftar Sesi Lelang</div></div>
   <div style="overflow-x:auto">
     <table class="table-m">
       <thead><tr><th>#</th><th>Nama Barang</th><th>Tgl Lelang</th><th>Penawaran Tertinggi</th><th>Pemenang</th><th>Status</th><th>Aksi</th></tr></thead>
@@ -23,7 +23,7 @@
           <td style="font-weight:600;color:var(--success)">{!! $d->_harga_tertinggi ? 'Rp '.number_format($d->_harga_tertinggi) : '<span style="color:var(--ink-l)">Belum ada</span>' !!}</td>
           <td>
             @if($d->status=='dibuka')<span style="color:var(--ink-l);font-size:.8rem">— (Berlangsung)</span>
-            @elseif($d->_pemenang)<span style="font-size:.82rem;color:var(--ink-s);font-weight:500">🏆 {{ $d->_pemenang }}</span>
+            @elseif($d->_pemenang)<span style="font-size:.82rem;color:var(--ink-s);font-weight:500"><i class="bi bi-trophy"></i> {{ $d->_pemenang }}</span>
             @else<span style="color:var(--ink-l);font-size:.8rem">Tidak ada pemenang</span>@endif
           </td>
           <td>
@@ -39,7 +39,7 @@
           </td>
         </tr>
         @empty
-        <tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--ink-m)"><div style="font-size:2rem;opacity:.25;margin-bottom:.5rem">⚡</div>Belum ada sesi lelang</td></tr>
+        <tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--ink-m)"><div style="font-size:2rem;opacity:.25;margin-bottom:.5rem"><i class="bi bi-lightning-charge"></i></div>Belum ada sesi lelang</td></tr>
         @endforelse
       </tbody>
     </table>
@@ -49,7 +49,7 @@
 @foreach($rows_lelang as $d)
 <div class="modal-m-overlay" id="modal-buka{{ $d->id_lelang }}">
   <div class="modal-m"><div class="modal-m-header"><span class="modal-m-title">Buka Sesi Lelang</span><button class="modal-m-close" onclick="closeModal('modal-buka{{ $d->id_lelang }}')">×</button></div>
-  <div class="modal-m-body" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;margin-bottom:.75rem">🔓</div><p style="font-size:.9rem;color:var(--ink-s)">Buka sesi lelang untuk barang <strong>{{ $d->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong>?</p></div>
+  <div class="modal-m-body" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;margin-bottom:.75rem"><i class="bi bi-unlock"></i></div><p style="font-size:.9rem;color:var(--ink-s)">Buka sesi lelang untuk barang <strong>{{ $d->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong>?</p></div>
   <form method="post" action="{{ route('petugas.aktivasi.buka') }}">@csrf<input type="hidden" name="id_lelang" value="{{ $d->id_lelang }}">
   <div class="modal-m-footer"><button type="button" class="btn-m btn-outline-m" onclick="closeModal('modal-buka{{ $d->id_lelang }}')">Batal</button><button type="submit" class="btn-m btn-success-m"><i class="fas fa-play"></i> Ya, Buka Lelang</button></div>
   </form></div>
@@ -57,7 +57,7 @@
 <div class="modal-m-overlay" id="modal-tutup{{ $d->id_lelang }}">
   <div class="modal-m"><div class="modal-m-header"><span class="modal-m-title">Tutup Sesi Lelang</span><button class="modal-m-close" onclick="closeModal('modal-tutup{{ $d->id_lelang }}')">×</button></div>
   <div class="modal-m-body" style="text-align:center;padding:1.5rem">
-    <div style="font-size:2.5rem;margin-bottom:.75rem">🔒</div>
+    <div style="font-size:2.5rem;margin-bottom:.75rem"><i class="bi bi-lock"></i></div>
     <p style="font-size:.9rem;color:var(--ink-s)">Tutup sesi lelang <strong>{{ $d->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong>? Pemenang ditetapkan berdasarkan penawaran tertinggi.</p>
     @if($d->_pemenang)<div style="margin-top:1rem;background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:var(--rs);padding:.85rem;font-size:.85rem;color:var(--ink-s)">🏆 Pemenang saat ini: <strong>{{ $d->_pemenang }}</strong> — <strong>Rp {{ number_format($d->_harga_tertinggi) }}</strong></div>@endif
   </div>
@@ -71,7 +71,7 @@
 @endforeach
 
 <div class="card-m fade-up delay-2">
-  <div class="card-m-header"><div class="card-m-title"><span>📡</span> Penawaran Real-Time <span style="font-size:.7rem;font-weight:400;color:var(--gold);margin-left:.5rem;animation:blink 2s infinite">● LIVE</span></div></div>
+  <div class="card-m-header"><div class="card-m-title"><i class="bi bi-broadcast"></i> Penawaran Real-Time <span style="font-size:.7rem;font-weight:400;color:var(--gold);margin-left:.5rem;animation:blink 2s infinite">● LIVE</span></div></div>
   <div id="realtime-div" style="padding:.5rem 0">
     @include('petugas.isi')
   </div>

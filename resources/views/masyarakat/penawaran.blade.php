@@ -53,7 +53,7 @@
   @if($thumb)
     <img src="{{ asset('uploads/barang/'.$thumb->nama_file) }}" class="auction-card-img" onclick="openDetail({{ $d->id_lelang }})" style="cursor:pointer">
   @else
-    <div class="auction-card-img-placeholder" onclick="openDetail({{ $d->id_lelang }})" style="cursor:pointer">📦</div>
+    <div class="auction-card-img-placeholder" onclick="openDetail({{ $d->id_lelang }})" style="cursor:pointer"><i class="bi bi-box-seam"></i></div>
   @endif
   <div style="padding:1rem">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
@@ -95,7 +95,7 @@
 
 <div class="modal-m-overlay" id="modal-detail{{ $d->id_lelang }}" style="z-index:1100">
   <div class="modal-m" style="max-width:580px">
-    <div class="modal-m-header"><span class="modal-m-title">📦 Detail Barang Lelang</span><button class="modal-m-close" onclick="closeModal('modal-detail{{ $d->id_lelang }}')">×</button></div>
+    <div class="modal-m-header"><span class="modal-m-title"><i class="bi bi-box-seam"></i> Detail Barang Lelang</span><button class="modal-m-close" onclick="closeModal('modal-detail{{ $d->id_lelang }}')">×</button></div>
     <div class="modal-m-body">
       @if($gambar_arr->isNotEmpty())
       <div style="margin-bottom:1rem">
@@ -109,7 +109,7 @@
         @endif
       </div>
       @else
-      <div style="width:100%;aspect-ratio:16/9;background:var(--cream-d);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">📦</div>
+      <div style="width:100%;aspect-ratio:16/9;background:var(--cream-d);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem"><i class="bi bi-box-seam"></i></div>
       @endif
 
       <div style="background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:var(--rs);padding:1rem;margin-bottom:1rem">
@@ -204,13 +204,13 @@
 
 @else
 <div class="card-m fade-up delay-1" style="margin-bottom:2rem">
-  <div class="card-m-body"><div class="empty-state"><div class="empty-icon">🔍</div><h4>Tidak Ada Lelang Aktif</h4><p>Saat ini tidak ada lelang yang sedang berlangsung. Pantau terus untuk lelang berikutnya!</p></div></div>
+  <div class="card-m-body"><div class="empty-state"><div class="empty-icon"><i class="bi bi-search"></i></div><h4>Tidak Ada Lelang Aktif</h4><p>Saat ini tidak ada lelang yang sedang berlangsung. Pantau terus untuk lelang berikutnya!</p></div></div>
 </div>
 @endif
 
 {{-- History table --}}
 <div class="card-m fade-up delay-2">
-  <div class="card-m-header"><div class="card-m-title"><span>📋</span> Riwayat Penawaran Saya</div></div>
+  <div class="card-m-header"><div class="card-m-title"><i class="bi bi-card-list"></i> Riwayat Penawaran Saya</div></div>
   <div style="overflow-x:auto">
     <table class="table-m">
       <thead><tr><th>#</th><th>Nama Barang</th><th>Harga Awal</th><th>Penawaran Saya</th><th>Hasil</th><th>Aksi</th></tr></thead>

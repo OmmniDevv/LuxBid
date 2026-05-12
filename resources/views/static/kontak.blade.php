@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="{{ asset('assets/modern.css') }}">
 <link rel="icon" href="{{ asset('assets/favicon.jpeg') }}">
 <style>
@@ -73,7 +74,7 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink)}
   <div class="contact-grid">
 
     <div class="contact-card">
-      <div class="icon">💬</div>
+      <div class="icon"><i class="bi bi-chat-dots"></i></div>
       <h3>WhatsApp</h3>
       <p>Cara tercepat untuk menghubungi kami. Tim support kami aktif setiap hari Senin–Sabtu, pukul 08.00–17.00 WIB.</p>
       <p><strong>+62 858-6907-4622</strong></p>
@@ -83,21 +84,21 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink)}
     </div>
 
     <div class="contact-card">
-      <div class="icon">📧</div>
+      <div class="icon"><i class="bi bi-envelope-at"></i></div>
       <h3>Email</h3>
       <p>Untuk pertanyaan formal, laporan masalah teknis, atau kerja sama bisnis, kirimkan email ke alamat berikut. Kami merespons dalam 1×24 jam kerja.</p>
       <a href="mailto:support@luxbid.id">support@luxbid.id</a>
     </div>
 
     <div class="contact-card">
-      <div class="icon">🏢</div>
+      <div class="icon"><i class="bi bi-building"></i></div>
       <h3>Kantor</h3>
       <p>SMKN 7 Baleendah, Jl. Siliwangi No. 1, Baleendah, Kabupaten Bandung, Jawa Barat 40375.</p>
       <p style="font-size:.8rem;color:var(--ink-m)">Kunjungan hanya dengan perjanjian terlebih dahulu.</p>
     </div>
 
     <div class="contact-card">
-      <div class="icon">🕐</div>
+      <div class="icon"><i class="bi bi-clock"></i></div>
       <h3>Jam Operasional</h3>
       <p>Senin – Jumat: 08.00 – 17.00 WIB<br>Sabtu: 08.00 – 12.00 WIB<br>Minggu & Hari Libur: Tutup</p>
       <p style="font-size:.8rem;color:var(--ink-m)">Pesan di luar jam operasional akan dibalas pada hari kerja berikutnya.</p>

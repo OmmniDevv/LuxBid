@@ -28,6 +28,9 @@ Pastikan sistem kamu memenuhi semua requirement berikut sebelum memulai:
 | **Node.js** | `>= 18.x` | Untuk kompilasi asset Tailwind (wajib) |
 | **NPM** | `>= 9.x` | Ikut terinstall bersama Node.js |
 
+> **⚠️ Catatan Windows (Laragon/XAMPP):**  
+> Laravel 13 membutuhkan PHP ^8.3. Jika menggunakan PHP 8.5+, jalankan `composer install --ignore-platform-reqs` untuk bypass platform check.
+
 <br/>
 
 ---
@@ -132,6 +135,65 @@ php artisan serve
 ```
 
 Buka browser dan akses: **http://localhost:8000** 🎉
+
+<br/>
+
+### Step 9 — Setup Scheduler (Production)
+
+> ⚠️ **Penting untuk Production:** Scheduler diperlukan untuk auto-delete barang kadaluarsa (7 hari setelah lelang selesai).
+
+#### Linux / macOS
+
+Tambahkan ke crontab:
+```bash
+crontab -e
+```
+
+Tambahkan baris:
+```bash
+* * * * * cd /path/to/luxbid && php artisan schedule:run >> /dev/null 2>&1
+```
+
+#### Windows (Laragon / XAMPP)
+
+**Otomatis (Recommended):**
+
+Jalankan command berikut di PowerShell (sebagai Administrator):
+```powershell
+cd C:\path\to\luxbid
+schtasks /create /tn "LuxBid Scheduler" /tr "C:\path\to\luxbid\scheduler.bat" /sc minute /f
+```
+
+> File `scheduler.bat` sudah tersedia di root proyek.
+
+**Manual via GUI:**
+
+1. Buka **Task Scheduler** (tekan `Win + R`, ketik `taskschd.msc`)
+2. Klik **Create Basic Task**
+3. Name: `LuxBid Scheduler`
+4. Trigger: **Daily**, repeat every **1 minute**
+5. Action: **Start a program**
+6. Program: `C:\path\to\luxbid\scheduler.bat`
+7. Finish
+
+**Verifikasi:**
+```bash
+# Cek task scheduler
+schtasks /query /tn "LuxBid Scheduler"
+
+# Test manual
+php artisan lelang:hapus-barang-kadaluarsa
+
+# Lihat daftar scheduled tasks
+php artisan schedule:list
+```
+
+**Untuk Development:**
+
+Cukup jalankan:
+```bash
+php artisan schedule:work
+```
 
 <br/>
 

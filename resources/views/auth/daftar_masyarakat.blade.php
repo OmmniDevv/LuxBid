@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{{ asset('assets/modern.css') }}">
   <link rel="icon" href="{{ asset('assets/favicon.jpeg') }}">
   <style>
@@ -63,7 +64,7 @@
     <div class="reg-form-side">
       <div class="reg-header">
         <a href="{{ route('home') }}" class="reg-back"><i class="fas fa-arrow-left"></i> Kembali ke Beranda</a>
-        <div class="reg-icon">📝</div>
+        <div class="reg-icon"><i class="bi bi-pencil-square"></i></div>
         <h1 class="reg-title">Buat Akun Baru</h1>
         <p class="reg-sub">Daftar gratis dan mulai ikuti lelang dalam hitungan menit.</p>
       </div>
