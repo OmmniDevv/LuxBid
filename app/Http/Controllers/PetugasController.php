@@ -98,17 +98,29 @@ class PetugasController extends Controller
         return redirect()->route('petugas.barang', ['info' => 'update']);
     }
 
-    public function hapusBarang(Request $request)
-    {
-        $id_barang = $request->input('id_barang');
-        GambarBarang::where('id_barang', $id_barang)->each(function ($g) {
-            @unlink(public_path("uploads/barang/{$g->nama_file}"));
-        });
-        GambarBarang::where('id_barang', $id_barang)->delete();
-        Barang::where('id_barang', $id_barang)->delete();
+public function hapusBarang(Request $request)
+{
+    $id_barang = $request->input('id_barang');
 
-        return redirect()->route('petugas.barang', ['info' => 'hapus']);
-    }
+    // 1. Hapus history_lelang yang terkait barang ini
+    $id_lelang_list = Lelang::where('id_barang', $id_barang)->pluck('id_lelang');
+    HistoryLelang::whereIn('id_lelang', $id_lelang_list)->delete();
+    HistoryLelang::where('id_barang', $id_barang)->delete();
+
+    // 2. Hapus lelang yang terkait barang ini
+    Lelang::where('id_barang', $id_barang)->delete();
+
+    // 3. Hapus gambar (file fisik + record)
+    GambarBarang::where('id_barang', $id_barang)->each(function ($g) {
+        @unlink(public_path("uploads/barang/{$g->nama_file}"));
+    });
+    GambarBarang::where('id_barang', $id_barang)->delete();
+
+    // 4. Hapus barang
+    Barang::where('id_barang', $id_barang)->delete();
+
+    return redirect()->route('petugas.barang', ['info' => 'hapus']);
+}
 
     public function aktivasi()
     {
