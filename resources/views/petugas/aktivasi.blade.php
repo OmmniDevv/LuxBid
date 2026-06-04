@@ -59,7 +59,7 @@
   <div class="modal-m-body" style="text-align:center;padding:1.5rem">
     <div style="font-size:2.5rem;margin-bottom:.75rem"><i class="bi bi-lock"></i></div>
     <p style="font-size:.9rem;color:var(--ink-s)">Tutup sesi lelang <strong>{{ $d->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong>? Pemenang ditetapkan berdasarkan penawaran tertinggi.</p>
-    @if($d->_pemenang)<div style="margin-top:1rem;background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:var(--rs);padding:.85rem;font-size:.85rem;color:var(--ink-s)">🏆 Pemenang saat ini: <strong>{{ $d->_pemenang }}</strong> — <strong>Rp {{ number_format($d->_harga_tertinggi) }}</strong></div>@endif
+    @if($d->_pemenang)<div style="margin-top:1rem;background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:var(--rs);padding:.85rem;font-size:.85rem;color:var(--ink-s)"><i class="bi bi-trophy" style="color:var(--gold)"></i> Pemenang saat ini: <strong>{{ $d->_pemenang }}</strong> — <strong>Rp {{ number_format($d->_harga_tertinggi) }}</strong></div>@endif
   </div>
   <form method="post" action="{{ route('petugas.aktivasi.tutup') }}">@csrf
     <input type="hidden" name="id_lelang" value="{{ $d->id_lelang }}">

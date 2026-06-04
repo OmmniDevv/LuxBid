@@ -11,7 +11,7 @@
 @if(request('info')=='update')<div class="alert-m alert-success-m fade-up"><i class="fas fa-check-circle alert-m-icon"></i><span>Data petugas berhasil diperbarui.</span><button class="alert-close" onclick="this.closest('.alert-m').remove()">×</button></div>@endif
 
 <div class="card-m fade-up delay-1">
-  <div class="card-m-header"><div class="card-m-title"><span>👥</span> Daftar Petugas & Admin</div></div>
+  <div class="card-m-header"><div class="card-m-title"><i class="bi bi-people"></i> Daftar Petugas & Admin</div></div>
   <div style="overflow-x:auto">
     <table class="table-m">
       <thead><tr><th>#</th><th>Nama Petugas</th><th>Username</th><th>Level Akses</th><th>Aksi</th></tr></thead>

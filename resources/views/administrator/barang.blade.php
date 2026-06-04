@@ -3,18 +3,16 @@
 @push('styles')
 <style>
 .img-upload-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:.5rem}
-.img-slot{position:relative;border:2px dashed var(--cream-dd);border-radius:10px;aspect-ratio:1;overflow:hidden;cursor:pointer;transition:border-color .22s,background .22s}
-.img-slot:hover{border-color:var(--gold);background:var(--gold-p)}
+.img-slot{position:relative;border:2px dashed var(--border-2);border-radius:var(--rs);aspect-ratio:1;overflow:hidden;cursor:pointer;transition:border-color .22s,background .22s}
+.img-slot:hover{border-color:var(--accent);background:var(--accent-p)}
 .img-slot input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2}
-.img-slot-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:.4rem;color:var(--ink-l);font-size:.75rem;pointer-events:none}
-.img-slot-placeholder i{font-size:1.4rem;color:var(--cream-dd)}
+.img-slot-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:.4rem;color:var(--text-3);font-size:.75rem;pointer-events:none}
+.img-slot-placeholder i{font-size:1.4rem;color:var(--text-3)}
 .img-slot-preview{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;z-index:1}
 .img-slot-badge{position:absolute;top:.35rem;left:.35rem;background:var(--ink);color:var(--cream);font-size:.62rem;font-weight:700;padding:.15rem .4rem;border-radius:4px;z-index:3}
+[data-theme="dark"] .img-slot-badge{background:var(--accent);color:var(--ink)}
 .img-slot-remove{position:absolute;top:.35rem;right:.35rem;background:var(--danger);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:.75rem;cursor:pointer;z-index:3;display:none;align-items:center;justify-content:center}
 .img-slot-remove.visible{display:flex}
-/* Fix modal scroll untuk form panjang */
-.modal-tall .modal-m-body{max-height:calc(100vh - 200px);overflow-y:auto}
-.modal-tall{align-items:flex-start;padding-top:2rem;padding-bottom:2rem}
 </style>
 @endpush
 @section('content')
@@ -39,7 +37,7 @@
           <td style="color:var(--ink-l);font-size:.8rem">{{ $i+1 }}</td>
           <td>
             @if($thumb)<img src="{{ asset('uploads/barang/'.$thumb->nama_file) }}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--cream-dd)">
-            @else<div style="width:48px;height:48px;background:var(--cream-d);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">📷</div>@endif
+            @else<div style="width:48px;height:48px;background:var(--cream-d);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--ink-l)"><i class="bi bi-camera"></i></div>@endif
           </td>
           <td><strong style="color:var(--ink)">{{ $d->nama_barang }}</strong></td>
           <td style="color:var(--ink-m)">{{ $d->nama_penjual ?: '—' }}</td>

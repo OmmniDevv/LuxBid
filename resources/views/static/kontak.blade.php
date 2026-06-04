@@ -1,132 +1,210 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<script>(function(){var d=localStorage.getItem('theme')==='dark';document.documentElement.setAttribute('data-theme',d?'dark':'light');})()</script>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Kontak — Lux Bid</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link rel="stylesheet" href="{{ asset('assets/modern.css') }}">
-<link rel="icon" href="{{ asset('assets/favicon.jpeg') }}">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--gold:#B8860B;--gold-l:#D4A017;--gold-p:#FDF8EE;--gold-ln:rgba(184,134,11,.2);--ink:#1C1A15;--ink-s:#3A3527;--ink-m:#7A7260;--cream:#FAF7F0;--cream-d:#EDE8DC;--white:#FFFFFF;--r:12px;--rs:7px;--ease:.24s cubic-bezier(.4,0,.2,1);}
-body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink)}
-.ln{position:fixed;inset:0 0 auto 0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 3rem;height:64px;background:rgba(250,247,240,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--gold-ln)}
-.ln-logo{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-.ln-logo img{width:44px;height:44px;object-fit:contain;border-radius:8px}
-.ln-logo span{color:var(--gold)}
-.ln-links{display:flex;align-items:center;gap:.25rem;list-style:none}
-.ln-links a{font-size:.85rem;font-weight:500;color:var(--ink-m);text-decoration:none;padding:.45rem .9rem;border-radius:100px;transition:color var(--ease),background var(--ease)}
-.ln-links a:hover,.ln-links a.active{color:var(--ink);background:var(--cream-d)}
-.ln-cta{background:var(--ink)!important;color:var(--cream)!important;padding:.45rem 1.2rem!important}
-.ln-cta:hover{background:var(--gold)!important;color:var(--ink)!important}
-.page-hero{padding:9rem 1.5rem 4rem;text-align:center}
-.lbl{display:inline-block;font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem}
-.ttl{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);line-height:1.1;color:var(--ink)}
-.dsc{margin-top:.9rem;font-size:.95rem;color:var(--ink-m);max-width:520px;margin-left:auto;margin-right:auto;line-height:1.75}
-.inner{max-width:900px;margin:0 auto;padding:0 1.5rem 6rem}
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3rem}
-@media(max-width:640px){.contact-grid{grid-template-columns:1fr}}
-.contact-card{background:var(--white);border:1px solid var(--gold-ln);border-radius:var(--r);padding:2rem;display:flex;flex-direction:column;gap:.75rem}
-.contact-card .icon{width:48px;height:48px;background:var(--gold-p);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:1.3rem}
-.contact-card h3{font-size:1rem;font-weight:600;color:var(--ink)}
-.contact-card p{font-size:.85rem;color:var(--ink-m);line-height:1.65}
-.contact-card a{font-size:.85rem;color:var(--gold);text-decoration:none;font-weight:500}
-.contact-card a:hover{text-decoration:underline}
-.wa-btn{display:inline-flex;align-items:center;gap:.6rem;background:#25D366;color:#fff;padding:.75rem 1.5rem;border-radius:100px;font-size:.9rem;font-weight:600;text-decoration:none;transition:all var(--ease);box-shadow:0 4px 14px rgba(37,211,102,.3);margin-top:.5rem}
-.wa-btn:hover{background:#1ebe5d;transform:translateY(-2px);text-decoration:none;color:#fff}
-.footer{background:var(--gold-p);border-top:1px solid var(--gold-ln)}
-.fi{max-width:1080px;margin:0 auto;padding:2.5rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
-.flogo{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-.flogo img{width:36px;height:36px;object-fit:contain;border-radius:6px}
-.flogo span{color:var(--gold)}
-.ftag{font-size:.75rem;color:var(--ink-m);margin-top:.25rem}
-.flinks{display:flex;gap:1.5rem}
-.flinks a{font-size:.82rem;color:var(--ink-m);text-decoration:none;transition:color var(--ease)}
-.flinks a:hover{color:var(--gold)}
-.fbot{max-width:1080px;margin:0 auto;padding:.75rem 1.5rem 1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;font-size:.72rem;color:var(--ink-m);border-top:1px solid var(--gold-ln)}
-</style>
+  <script>(function(){var d=localStorage.getItem('theme')==='dark';document.documentElement.setAttribute('data-theme',d?'dark':'light');})()</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Kontak — LuxBid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{{ asset('assets/luxbid.css') }}">
+  <link rel="icon" href="{{ asset('assets/favicon.jpeg') }}">
+  <style>
+    .static-nav{
+      position:fixed;inset:0 0 auto 0;z-index:200;
+      height:64px;display:flex;align-items:center;justify-content:space-between;
+      padding:0 2.5rem;
+      background:rgba(250,250,249,.88);
+      backdrop-filter:blur(20px) saturate(180%);
+      border-bottom:1px solid var(--border);
+    }
+    [data-theme="dark"] .static-nav{background:rgba(12,10,9,.92)}
+    .sn-brand{
+      font-family:var(--font-serif);font-size:1.3rem;font-weight:700;
+      color:var(--text);text-decoration:none;
+      display:inline-flex;align-items:center;gap:.6rem;
+    }
+    .sn-brand span{color:var(--accent)}
+    .sn-brand img{width:40px;height:40px;border-radius:8px}
+    .sn-links{display:flex;align-items:center;gap:.5rem}
+    .sn-links a{
+      font-size:.8rem;font-weight:500;color:var(--text-2);
+      text-decoration:none;padding:.4rem .9rem;border-radius:100px;
+      transition:all var(--ease-fast);
+    }
+    .sn-links a:hover{color:var(--text);background:var(--surface-2)}
+
+    .static-hero{
+      padding:9rem 1.5rem 4rem;text-align:center;
+      background:var(--surface-2);
+    }
+    [data-theme="dark"] .static-hero{background:var(--surface)}
+    .static-inner{max-width:900px;margin:0 auto;padding:4rem 1.5rem 6rem}
+
+    .contact-grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:1.5rem;margin-top:3rem;
+    }
+    .contact-card{
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--r);padding:2rem;
+      transition:transform var(--ease-fast),box-shadow var(--ease-fast),border-color var(--ease-fast);
+    }
+    .contact-card:hover{
+      transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--accent-ln);
+    }
+    .cc-icon{
+      width:50px;height:50px;border-radius:var(--rs);
+      background:var(--accent-p);border:1px solid var(--accent-ln);
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.3rem;color:var(--accent);margin-bottom:1.1rem;
+    }
+    .cc-title{
+      font-family:var(--font-serif);font-size:1.05rem;
+      color:var(--text);margin-bottom:.4rem;font-weight:600;
+    }
+    .cc-text{font-size:.84rem;color:var(--text-2);line-height:1.65;margin-bottom:.6rem}
+    .cc-link{
+      font-size:.86rem;color:var(--accent);
+      text-decoration:none;font-weight:600;
+      transition:color var(--ease-fast);
+    }
+    .cc-link:hover{color:var(--accent-l);text-decoration:underline}
+
+    .wa-cta{
+      background:var(--accent-p);border:1px solid var(--accent-ln);
+      border-radius:var(--r);padding:2.5rem;text-align:center;
+      margin-top:3rem;
+    }
+    .wa-cta h3{
+      font-family:var(--font-serif);font-size:1.35rem;
+      color:var(--text);margin-bottom:.6rem;
+    }
+    .wa-cta p{font-size:.88rem;color:var(--text-2);margin-bottom:1.5rem;line-height:1.7}
+    .wa-btn{
+      display:inline-flex;align-items:center;gap:.6rem;
+      background:#25D366;color:#fff;
+      padding:.85rem 2rem;border-radius:100px;
+      font-size:.9rem;font-weight:600;text-decoration:none;
+      box-shadow:0 4px 16px rgba(37,211,102,.3);
+      transition:all var(--ease-fast);
+    }
+    .wa-btn:hover{
+      background:#1ebe5d;transform:translateY(-2px);
+      box-shadow:0 6px 22px rgba(37,211,102,.4);text-decoration:none;color:#fff;
+    }
+
+    .static-footer{
+      background:var(--surface-2);border-top:1px solid var(--border);
+      padding:2.5rem 1.5rem 1.5rem;
+    }
+    [data-theme="dark"] .static-footer{background:var(--surface)}
+    .sf-inner{max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem}
+    .sf-brand{
+      font-family:var(--font-serif);font-size:1.1rem;font-weight:700;
+      color:var(--text);text-decoration:none;
+      display:inline-flex;align-items:center;gap:.55rem;
+    }
+    .sf-brand span{color:var(--accent)}
+    .sf-brand img{width:32px;height:32px;border-radius:6px}
+    .sf-links{display:flex;gap:1.5rem}
+    .sf-links a{font-size:.8rem;color:var(--text-2);text-decoration:none;transition:color var(--ease-fast)}
+    .sf-links a:hover{color:var(--accent)}
+    .sf-copy{
+      max-width:900px;margin:.75rem auto 0;padding-top:1rem;
+      border-top:1px solid var(--border);
+      font-size:.72rem;color:var(--text-3);text-align:center;
+    }
+
+    @media(max-width:768px){
+      .static-nav{padding:0 1.25rem}
+      .sn-links a:not(:last-child){display:none}
+    }
+  </style>
 </head>
 <body>
-<nav class="ln">
-  <a href="{{ route('home') }}" class="ln-logo">
-    <img src="{{ asset('assets/images/logo.png') }}" alt="Lux Bid">
-    Lux<span>Bid</span>
-  </a>
-  <ul class="ln-links">
-    <li><a href="{{ route('home') }}">Beranda</a></li>
-    <li><a href="/bantuan">Bantuan</a></li>
-    <li><a href="/kontak" class="active">Kontak</a></li>
-    <li><a href="{{ route('login.masyarakat') }}" class="ln-cta">Masuk</a></li>
-  </ul>
-</nav>
-
-<div class="page-hero">
-  <div class="lbl">Hubungi Kami</div>
-  <h1 class="ttl">Kami Siap Membantu Anda</h1>
-  <p class="dsc">Ada pertanyaan, kendala, atau masukan? Tim LuxBid siap merespons dengan cepat dan profesional. Jangan ragu untuk menghubungi kami melalui saluran di bawah ini.</p>
-</div>
-
-<div class="inner">
-  <div class="contact-grid">
-
-    <div class="contact-card">
-      <div class="icon"><i class="bi bi-chat-dots"></i></div>
-      <h3>WhatsApp</h3>
-      <p>Cara tercepat untuk menghubungi kami. Tim support kami aktif setiap hari Senin–Sabtu, pukul 08.00–17.00 WIB.</p>
-      <p><strong>+62 858-6907-4622</strong></p>
-      <a href="https://wa.me/6285869074622" class="wa-btn" target="_blank" rel="noopener">
-        <i class="fab fa-whatsapp"></i> Chat via WhatsApp
-      </a>
-    </div>
-
-    <div class="contact-card">
-      <div class="icon"><i class="bi bi-envelope-at"></i></div>
-      <h3>Email</h3>
-      <p>Untuk pertanyaan formal, laporan masalah teknis, atau kerja sama bisnis, kirimkan email ke alamat berikut. Kami merespons dalam 1×24 jam kerja.</p>
-      <a href="mailto:support@luxbid.id">support@luxbid.id</a>
-    </div>
-
-    <div class="contact-card">
-      <div class="icon"><i class="bi bi-building"></i></div>
-      <h3>Kantor</h3>
-      <p>SMKN 7 Baleendah, Jl. Siliwangi No. 1, Baleendah, Kabupaten Bandung, Jawa Barat 40375.</p>
-      <p style="font-size:.8rem;color:var(--ink-m)">Kunjungan hanya dengan perjanjian terlebih dahulu.</p>
-    </div>
-
-    <div class="contact-card">
-      <div class="icon"><i class="bi bi-clock"></i></div>
-      <h3>Jam Operasional</h3>
-      <p>Senin – Jumat: 08.00 – 17.00 WIB<br>Sabtu: 08.00 – 12.00 WIB<br>Minggu & Hari Libur: Tutup</p>
-      <p style="font-size:.8rem;color:var(--ink-m)">Pesan di luar jam operasional akan dibalas pada hari kerja berikutnya.</p>
-    </div>
-
-  </div>
-</div>
-
-<footer class="footer">
-  <div class="fi">
-    <div>
-      <a href="{{ route('home') }}" class="flogo">
-        <img src="{{ asset('assets/images/logo.png') }}" alt="Lux Bid">
-        Lux<span>Bid</span>
-      </a>
-      <p class="ftag">Platform Pelelangan Online</p>
-    </div>
-    <div class="flinks">
+  <nav class="static-nav">
+    <a href="{{ route('home') }}" class="sn-brand">
+      <img src="{{ asset('assets/images/logo.png') }}" alt="LuxBid">
+      Lux<span>Bid</span>
+    </a>
+    <div class="sn-links">
+      <a href="{{ route('home') }}">Beranda</a>
       <a href="/kontak">Kontak</a>
       <a href="/bantuan">Bantuan</a>
-      <a href="/kebijakan-privasi">Kebijakan Privasi</a>
+      <button class="dm-toggle" id="dm-toggle" title="Toggle dark mode"><i class="fas fa-moon"></i></button>
+    </div>
+  </nav>
+
+  <section class="static-hero">
+    <span class="sec-lbl">Hubungi Kami</span>
+    <h1 class="sec-title">Kontak LuxBid</h1>
+    <p class="sec-desc" style="max-width:520px;margin-left:auto;margin-right:auto">
+      Butuh bantuan atau informasi lebih lanjut? Tim kami siap membantu Anda.
+    </p>
+  </section>
+
+  <div class="static-inner">
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="cc-icon"><i class="fas fa-envelope"></i></div>
+        <h3 class="cc-title">Email</h3>
+        <p class="cc-text">Kirim pertanyaan atau saran Anda melalui email resmi kami.</p>
+        <a href="mailto:support@luxbid.com" class="cc-link">support@luxbid.com</a>
+      </div>
+
+      <div class="contact-card">
+        <div class="cc-icon"><i class="fas fa-phone-alt"></i></div>
+        <h3 class="cc-title">Telepon</h3>
+        <p class="cc-text">Hubungi kami via telepon pada jam kerja (Senin-Jumat, 09:00-17:00 WIB).</p>
+        <a href="tel:+6285869074622" class="cc-link">+62 858-6907-4622</a>
+      </div>
+
+      <div class="contact-card">
+        <div class="cc-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <h3 class="cc-title">Alamat Kantor</h3>
+        <p class="cc-text">Kunjungi kantor kami untuk konsultasi langsung (by appointment).</p>
+        <a href="https://maps.google.com" target="_blank" rel="noopener" class="cc-link">Lihat di Google Maps &rarr;</a>
+      </div>
+
+      <div class="contact-card">
+        <div class="cc-icon"><i class="bi bi-clock"></i></div>
+        <h3 class="cc-title">Jam Operasional</h3>
+        <p class="cc-text">
+          <strong>Senin - Jumat:</strong> 09:00 - 17:00 WIB<br>
+          <strong>Sabtu:</strong> 09:00 - 13:00 WIB<br>
+          <strong>Minggu & Libur:</strong> Tutup
+        </p>
+      </div>
+    </div>
+
+    <div class="wa-cta">
+      <h3>Butuh Respons Cepat?</h3>
+      <p>Hubungi kami via WhatsApp untuk mendapatkan balasan lebih cepat dari tim customer support kami.</p>
+      <a href="https://wa.me/6285869074622" target="_blank" rel="noopener" class="wa-btn">
+        <i class="bi bi-whatsapp"></i> Chat via WhatsApp
+      </a>
     </div>
   </div>
-  <div class="fbot">
-    <span>&copy; 2026 Lux Bid. Hak cipta dilindungi.</span>
-    <span>Made by TEAM HUNTERS &middot; MIT License</span>
-  </div>
-</footer>
-<script src="{{ asset('assets/theme.js') }}"></script>
+
+  <footer class="static-footer">
+    <div class="sf-inner">
+      <a href="{{ route('home') }}" class="sf-brand">
+        <img src="{{ asset('assets/images/logo.png') }}" alt="LuxBid">
+        Lux<span>Bid</span>
+      </a>
+      <div class="sf-links">
+        <a href="/kontak">Kontak</a>
+        <a href="/bantuan">Bantuan</a>
+        <a href="/kebijakan-privasi">Kebijakan Privasi</a>
+      </div>
+    </div>
+    <div class="sf-copy">&copy; {{ date('Y') }} LuxBid. Hak cipta dilindungi.</div>
+  </footer>
+
+  <script src="{{ asset('assets/theme.js') }}"></script>
 </body>
 </html>
