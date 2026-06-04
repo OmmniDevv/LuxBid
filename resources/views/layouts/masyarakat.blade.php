@@ -6,10 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Lux Bid</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="{{ asset('assets/modern.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/luxbid.css') }}">
   <link rel="icon" href="{{ asset('assets/favicon.jpeg') }}">
   @stack('styles')
 </head>
@@ -35,29 +36,29 @@
   <div class="mn-right">
     @php $user = \App\Models\Masyarakat::find(session('id_user')); @endphp
     <a href="{{ route('masyarakat.profile') }}" class="mn-user" title="Profil saya" style="text-decoration:none">
-      <div class="mn-avatar" style="overflow:hidden">
+      <div class="mn-avatar">
         @if($user && $user->foto)
-          <img src="{{ asset('uploads/profile/'.$user->foto) }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" alt="">
+          <img src="{{ asset('uploads/profile/'.$user->foto) }}" alt="{{ $username }}">
         @else
           {{ $initial }}
         @endif
       </div>
     </a>
-    <a href="{{ route('logout') }}" class="mn-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <a href="{{ route('logout') }}" class="mn-logout"><i class="fas fa-sign-out-alt"></i> Keluar</a>
     <button class="dm-toggle" id="dm-toggle" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
-    <button class="mn-toggler" id="mn-toggler" aria-label="Menu">
+    <button class="mn-toggler" id="mn-toggler" aria-label="Toggle menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 </nav>
 
 <div class="page-shell">
-<div class="page-inner">
+  <div class="page-inner">
 
-@yield('content')
+    @yield('content')
 
-</div><!-- /page-inner -->
-</div><!-- /page-shell -->
+  </div>
+</div>
 
 <footer class="mn-footer">
   <span>&copy; 2026 <strong>Lux Bid</strong> &mdash; Platform Pelelangan Online</span>

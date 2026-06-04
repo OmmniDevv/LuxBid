@@ -29,7 +29,7 @@
           <td style="color:var(--ink-m)">{{ $d->tgl_lelang ?? '—' }}</td>
           <td>
             @if($d->status=='dibuka')<span style="color:var(--ink-l);font-size:.8rem">Masih berlangsung</span>
-            @elseif($d->_pemenang)<span style="font-size:.82rem;font-weight:500">🏆 {{ $d->_pemenang }}</span>
+            @elseif($d->_pemenang)<span style="font-size:.82rem;font-weight:500"><i class="bi bi-trophy" style="color:var(--gold)"></i> {{ $d->_pemenang }}</span>
             @else<span style="color:var(--ink-l);font-size:.8rem">Tidak ada pemenang</span>@endif
           </td>
           <td style="color:var(--ink-m)">{{ $d->barang ? 'Rp '.number_format($d->barang->harga_awal) : '—' }}</td>

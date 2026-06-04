@@ -223,7 +223,7 @@
           <td style="font-weight:600;color:var(--ink)">Rp {{ number_format($h->penawaran_harga) }}</td>
           <td>
             @if($h->penawaran_harga == $h->lelang->harga_akhir && $h->lelang->harga_akhir > 0)
-              <span class="win-badge">🏆 Pemenang!</span>
+              <span class="win-badge"><i class="bi bi-trophy-fill"></i> Pemenang!</span>
             @elseif($h->lelang->status == 'ditutup')
               <span class="badge-m badge-closed">Kalah</span>
             @else
