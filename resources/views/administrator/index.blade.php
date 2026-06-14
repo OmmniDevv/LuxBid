@@ -35,6 +35,24 @@
   </div>
 </div>
 
+<div class="stat-grid fade-up delay-2" style="margin-top:1rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+  <div class="stat-card" style="border-left:3px solid #ffc107">
+    <div class="stat-card-ico" style="color:#ffc107"><i class="bi bi-hourglass-split"></i></div>
+    <div class="stat-card-n">{{ $menunggu_konfirmasi }}</div>
+    <div class="stat-card-l">Menunggu Konfirmasi</div>
+  </div>
+  <div class="stat-card" style="border-left:3px solid #17a2b8">
+    <div class="stat-card-ico" style="color:#17a2b8"><i class="bi bi-file-earmark-check"></i></div>
+    <div class="stat-card-n">{{ $menunggu_verifikasi }}</div>
+    <div class="stat-card-l">Verifikasi Bukti Bayar</div>
+  </div>
+  <div class="stat-card" style="border-left:3px solid #28a745">
+    <div class="stat-card-ico" style="color:#28a745"><i class="bi bi-currency-dollar"></i></div>
+    <div class="stat-card-n">Rp {{ number_format($total_pendapatan / 1000000, 1) }}jt</div>
+    <div class="stat-card-l">Total Pendapatan</div>
+  </div>
+</div>
+
 {{-- Quick access cards --}}
 <div class="quick-nav-grid fade-up delay-2">
   <a href="{{ route('administrator.barang') }}" class="qnav-card" style="text-decoration:none">

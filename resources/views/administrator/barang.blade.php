@@ -29,20 +29,21 @@
   <div class="card-m-header"><div class="card-m-title"><i class="bi bi-box-seam"></i> Daftar Barang Lelang</div></div>
   <div style="overflow-x:auto">
     <table class="table-m">
-      <thead><tr><th>#</th><th>Foto</th><th>Nama Barang</th><th>Penjual</th><th>Tanggal</th><th>Harga Awal</th><th>Deskripsi</th><th>Aksi</th></tr></thead>
+      <thead><tr><th>#</th><th>Foto</th><th>Nama Barang</th><th>Kategori</th><th>Penjual</th><th>Tanggal</th><th>Harga Awal</th><th>Deskripsi</th><th>Aksi</th></tr></thead>
       <tbody>
         @forelse($rows_barang as $i=>$d)
         @php $thumb = $all_gambar[$d->id_barang][1] ?? null; @endphp
         <tr>
           <td style="color:var(--ink-l);font-size:.8rem">{{ $i+1 }}</td>
           <td>
-            @if($thumb)<img src="{{ asset('uploads/barang/'.$thumb->nama_file) }}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--cream-dd)">
+            @if($thumb)<img src="{{ asset('storage/barang/'.$thumb->nama_file) }}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--cream-dd)">
             @else<div style="width:48px;height:48px;background:var(--cream-d);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--ink-l)"><i class="bi bi-camera"></i></div>@endif
           </td>
           <td><strong style="color:var(--ink)">{{ $d->nama_barang }}</strong></td>
+          <td><span class="badge-m" style="background:var(--gold-p);color:var(--ink-s);font-size:.72rem">{{ $d->kategori->nama_kategori ?? '—' }}</span></td>
           <td style="color:var(--ink-m)">{{ $d->nama_penjual ?: '—' }}</td>
           <td style="color:var(--ink-m)">{{ $d->tgl }}</td>
-          <td style="font-weight:600;color:var(--success)">Rp {{ number_format($d->harga_awal) }}</td>
+          <td style="font-weight:600;color:var(--success)">Rp {{ number_format($d->harga_awal, 0, ',', '.') }}</td>
           <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink-m)">{{ $d->deskripsi_barang ?: '—' }}</td>
           <td>
             <div style="display:flex;gap:.4rem;flex-wrap:wrap">
@@ -56,6 +57,9 @@
         @endforelse
       </tbody>
     </table>
+    @if($rows_barang->hasPages())
+    <div style="padding:.75rem 1rem">{{ $rows_barang->links() }}</div>
+    @endif
   </div>
 </div>
 
@@ -64,7 +68,7 @@
 <div class="modal-m-overlay" id="modal-hapus{{ $d->id_barang }}">
   <div class="modal-m"><div class="modal-m-header"><span class="modal-m-title">Konfirmasi Hapus</span><button class="modal-m-close" onclick="closeModal('modal-hapus{{ $d->id_barang }}')">×</button></div>
   <div class="modal-m-body"><div style="text-align:center;padding:1rem 0"><div style="font-size:2.5rem;margin-bottom:.75rem"><i class="bi bi-trash"></i></div><p style="font-size:.9rem;color:var(--ink-s)">Yakin ingin menghapus barang <strong>{{ $d->nama_barang }}</strong>?</p></div></div>
-  <div class="modal-m-footer"><button class="btn-m btn-outline-m" onclick="closeModal('modal-hapus{{ $d->id_barang }}')">Batal</button><a href="{{ route('administrator.barang.hapus', ['id_barang'=>$d->id_barang]) }}" class="btn-m btn-danger-m">Ya, Hapus</a></div></div>
+  <div class="modal-m-footer"><button class="btn-m btn-outline-m" onclick="closeModal('modal-hapus{{ $d->id_barang }}')">Batal</button><form method="POST" action="{{ route('administrator.barang.hapus', $d->id_barang) }}" style="display:inline">@csrf @method('DELETE')<button type="submit" class="btn-m btn-danger-m">Ya, Hapus</button></form></div></div>
 </div>
 <div class="modal-m-overlay modal-tall" id="modal-ubah{{ $d->id_barang }}">
   <div class="modal-m" style="max-width:520px"><div class="modal-m-header"><span class="modal-m-title">Edit Barang</span><button class="modal-m-close" onclick="closeModal('modal-ubah{{ $d->id_barang }}')">×</button></div>
@@ -72,6 +76,7 @@
     <div class="modal-m-body">
       <input type="hidden" name="id_barang" value="{{ $d->id_barang }}">
       <div class="form-group-m"><label class="form-label-m">Nama Barang</label><input type="text" class="form-control-m" name="nama_barang" value="{{ $d->nama_barang }}" required></div>
+      <div class="form-group-m"><label class="form-label-m">Kategori</label><select class="form-control-m" name="id_kategori" style="padding-left:1rem"><option value="">— Pilih Kategori —</option>@foreach($tb_kategori as $k)<option value="{{ $k->id_kategori }}" {{ $d->id_kategori == $k->id_kategori ? 'selected' : '' }}>{{ $k->nama_kategori }}</option>@endforeach</select></div>
       <div class="form-group-m"><label class="form-label-m">Nama Penjual</label><input type="text" class="form-control-m" name="nama_penjual" value="{{ $d->nama_penjual }}" placeholder="Nama penjual / pemilik barang..."></div>
       <div class="form-group-m"><label class="form-label-m">Tanggal</label><input type="date" class="form-control-m" style="padding-left:1rem" name="tgl" value="{{ $d->tgl }}" required></div>
       <div class="form-group-m"><label class="form-label-m">Harga Awal (Rp)</label><input type="number" class="form-control-m" style="padding-left:1rem" name="harga_awal" value="{{ $d->harga_awal }}" min="0" required></div>
@@ -82,7 +87,7 @@
           @php $ei=$imgs[$s]??null; @endphp
           <div class="img-slot" id="slot-edit-{{ $d->id_barang }}-{{ $s }}">
             <span class="img-slot-badge">Foto {{ $s }}</span>
-            @if($ei)<img src="{{ asset('uploads/barang/'.$ei->nama_file) }}" class="img-slot-preview" id="prev-edit-{{ $d->id_barang }}-{{ $s }}"><input type="hidden" name="hapus_gambar_{{ $s }}" value="" id="hps-{{ $d->id_barang }}-{{ $s }}"><button type="button" class="img-slot-remove visible" onclick="removeImg({{ $d->id_barang }},{{ $s }})"><i class="fas fa-times"></i></button>
+            @if($ei)<img src="{{ asset('storage/barang/'.$ei->nama_file) }}" class="img-slot-preview" id="prev-edit-{{ $d->id_barang }}-{{ $s }}"><input type="hidden" name="hapus_gambar_{{ $s }}" value="" id="hps-{{ $d->id_barang }}-{{ $s }}"><button type="button" class="img-slot-remove visible" onclick="removeImg({{ $d->id_barang }},{{ $s }})"><i class="fas fa-times"></i></button>
             @else<img src="" class="img-slot-preview" id="prev-edit-{{ $d->id_barang }}-{{ $s }}" style="display:none"><button type="button" class="img-slot-remove" id="rmbtn-{{ $d->id_barang }}-{{ $s }}" onclick="clearPreview({{ $d->id_barang }},{{ $s }})"><i class="fas fa-times"></i></button>@endif
             <input type="file" name="gambar_{{ $s }}" accept="image/*" onchange="previewImg(this,{{ $d->id_barang }},{{ $s }})">
             <div class="img-slot-placeholder"><i class="fas fa-camera"></i><span>{{ $ei?'Ganti':'Tambah' }}</span></div>
@@ -101,6 +106,7 @@
   <form method="post" action="{{ route('administrator.barang.simpan') }}" enctype="multipart/form-data">@csrf
     <div class="modal-m-body">
       <div class="form-group-m"><label class="form-label-m">Nama Barang</label><input type="text" class="form-control-m" name="nama_barang" placeholder="Nama barang lelang..." required></div>
+      <div class="form-group-m"><label class="form-label-m">Kategori</label><select class="form-control-m" name="id_kategori" style="padding-left:1rem"><option value="">— Pilih Kategori —</option>@foreach($tb_kategori as $k)<option value="{{ $k->id_kategori }}">{{ $k->nama_kategori }}</option>@endforeach</select></div>
       <div class="form-group-m"><label class="form-label-m">Nama Penjual</label><input type="text" class="form-control-m" name="nama_penjual" placeholder="Nama penjual / pemilik barang..."></div>
       <div class="form-group-m"><label class="form-label-m">Tanggal</label><input type="date" class="form-control-m" style="padding-left:1rem" name="tgl" required></div>
       <div class="form-group-m"><label class="form-label-m">Harga Awal (Rp)</label><input type="number" class="form-control-m" style="padding-left:1rem" name="harga_awal" placeholder="0" min="0" required></div>

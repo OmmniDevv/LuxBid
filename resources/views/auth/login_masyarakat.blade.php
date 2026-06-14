@@ -228,6 +228,11 @@
           <i class="fas fa-check-circle" style="flex-shrink:0;margin-top:.1rem"></i>
           <span>Pendaftaran berhasil! Silakan login dengan akun baru Anda.</span>
         </div>
+      @elseif(request('info') === 'belum_verif')
+        <div class="alert-m alert-warn-m">
+          <i class="fas fa-envelope" style="flex-shrink:0;margin-top:.1rem"></i>
+          <span>Akun Anda belum terverifikasi. Silakan cek email dan verifikasi terlebih dahulu.</span>
+        </div>
       @endif
 
       <form action="{{ route('login.masyarakat.post') }}" method="post">

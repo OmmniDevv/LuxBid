@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Petugas extends Authenticatable
 {
+    use HasFactory;
+
     protected $table = 'tb_petugas';
     protected $primaryKey = 'id_petugas';
     public $timestamps = false;

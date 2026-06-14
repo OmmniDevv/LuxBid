@@ -20,7 +20,7 @@
           <td style="color:var(--ink-l);font-size:.8rem">{{ $i+1 }}</td>
           <td><strong style="color:var(--ink)">{{ $d->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong></td>
           <td style="color:var(--ink-m)">{{ $d->tgl_lelang ?? '—' }}</td>
-          <td style="font-weight:600;color:var(--success)">{!! $d->_harga_tertinggi ? 'Rp '.number_format($d->_harga_tertinggi) : '<span style="color:var(--ink-l)">Belum ada</span>' !!}</td>
+          <td style="font-weight:600;color:var(--success)">@if($d->_harga_tertinggi)Rp {{ number_format($d->_harga_tertinggi, 0, ',', '.') }}@else<span style="color:var(--ink-l)">Belum ada</span>@endif</td>
           <td>
             @if($d->status=='dibuka')<span style="color:var(--ink-l);font-size:.8rem">— (Berlangsung)</span>
             @elseif($d->_pemenang)<span style="font-size:.82rem;color:var(--ink-s);font-weight:500"><i class="bi bi-trophy"></i> {{ $d->_pemenang }}</span>
@@ -59,7 +59,7 @@
   <div class="modal-m-body" style="text-align:center;padding:1.5rem">
     <div style="font-size:2.5rem;margin-bottom:.75rem"><i class="bi bi-lock"></i></div>
     <p style="font-size:.9rem;color:var(--ink-s)">Tutup sesi lelang <strong>{{ $d->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong>? Pemenang ditetapkan berdasarkan penawaran tertinggi.</p>
-    @if($d->_pemenang)<div style="margin-top:1rem;background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:var(--rs);padding:.85rem;font-size:.85rem;color:var(--ink-s)"><i class="bi bi-trophy" style="color:var(--gold)"></i> Pemenang saat ini: <strong>{{ $d->_pemenang }}</strong> — <strong>Rp {{ number_format($d->_harga_tertinggi) }}</strong></div>@endif
+    @if($d->_pemenang)<div style="margin-top:1rem;background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:var(--rs);padding:.85rem;font-size:.85rem;color:var(--ink-s)"><i class="bi bi-trophy" style="color:var(--gold)"></i> Pemenang saat ini: <strong>{{ $d->_pemenang }}</strong> — <strong>Rp {{ number_format($d->_harga_tertinggi, 0, ',', '.') }}</strong></div>@endif
   </div>
   <form method="post" action="{{ route('petugas.aktivasi.tutup') }}">@csrf
     <input type="hidden" name="id_lelang" value="{{ $d->id_lelang }}">
@@ -84,7 +84,7 @@
       <div class="form-group-m"><label class="form-label-m">Pilih Barang</label>
         <select name="id_barang" class="form-control-m" style="padding-left:1rem" required>
           <option value="" disabled selected>— Pilih Barang —</option>
-          @foreach($barang_list as $b)<option value="{{ $b->id_barang }}">{{ $b->nama_barang }} — Rp {{ number_format($b->harga_awal) }}</option>@endforeach
+          @foreach($barang_list as $b)<option value="{{ $b->id_barang }}">{{ $b->nama_barang }} — Rp {{ number_format($b->harga_awal, 0, ',', '.') }}</option>@endforeach
         </select>
       </div>
       <input type="hidden" name="id_petugas" value="{{ $petugas_session->id_petugas ?? '' }}">

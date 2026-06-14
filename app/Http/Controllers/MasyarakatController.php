@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OutbidMail;
 use App\Models\Lelang;
 use App\Models\Masyarakat;
 use App\Models\HistoryLelang;
+use App\Services\LelangService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class MasyarakatController extends Controller
 {
+    public function __construct(private LelangService $lelangService) {}
+
     public function profile()
     {
         $user = Masyarakat::find(session('id_user'));
@@ -23,9 +29,8 @@ class MasyarakatController extends Controller
         $user = Masyarakat::find($id);
 
         // Verify password
-        $stored = $user->password;
         $pass = $request->input('confirm_password');
-        $ok = str_starts_with($stored, '$2y$') ? Hash::check($pass, $stored) : ($stored === md5($pass));
+        $ok = Hash::check($pass, $user->password);
         if (!$ok) {
             return redirect()->route('masyarakat.profile')->with('info_profile', 'Password konfirmasi salah.')->with('info_type', 'danger');
         }
@@ -54,9 +59,8 @@ class MasyarakatController extends Controller
     public function updatePassword(Request $request)
     {
         $user = Masyarakat::find(session('id_user'));
-        $stored = $user->password;
         $old = $request->input('old_password');
-        $ok = str_starts_with($stored, '$2y$') ? Hash::check($old, $stored) : ($stored === md5($old));
+        $ok = Hash::check($old, $user->password);
 
         if (!$ok) {
             return redirect()->route('masyarakat.profile')->with('info_password', 'Password lama salah.')->with('info_type_pw', 'danger');
@@ -74,22 +78,21 @@ class MasyarakatController extends Controller
 
     public function updateFoto(Request $request)
     {
-        if (!$request->hasFile('foto') || !$request->file('foto')->isValid()) {
-            return redirect()->route('masyarakat.profile')->with('info_profile', 'File tidak valid.')->with('info_type', 'danger');
-        }
+        $request->validate([
+            'foto' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048|dimensions:min_width=100,min_height=100,max_width=5000,max_height=5000',
+        ]);
+
         $file = $request->file('foto');
-        if (!in_array($file->getMimeType(), ['image/jpeg','image/png','image/webp','image/gif'])) {
-            return redirect()->route('masyarakat.profile')->with('info_profile', 'File harus berupa gambar.')->with('info_type', 'danger');
-        }
-        if ($file->getSize() > 2 * 1024 * 1024) {
-            return redirect()->route('masyarakat.profile')->with('info_profile', 'Ukuran file maksimal 2MB.')->with('info_type', 'danger');
-        }
-
         $user = Masyarakat::find(session('id_user'));
-        if ($user->foto) @unlink(public_path('uploads/profile/'.$user->foto));
+        if ($user->foto) {
+            @unlink(storage_path('app/public/profile/' . $user->foto));
+            @unlink(public_path('uploads/profile/' . $user->foto)); // fallback lama
+        }
 
-        $filename = 'profile_'.session('id_user').'_'.time().'.'.$file->getClientOriginalExtension();
-        $file->move(public_path('uploads/profile'), $filename);
+        $filename = \Illuminate\Support\Str::random(40) . '.' . $file->extension();
+        $dir = storage_path('app/public/profile');
+        if (!is_dir($dir)) mkdir($dir, 0755, true);
+        $file->move($dir, $filename);
         $user->update(['foto' => $filename]);
 
         return redirect()->route('masyarakat.profile')->with('info_profile', 'Foto profil berhasil diperbarui.')->with('info_type', 'success');
@@ -100,14 +103,16 @@ class MasyarakatController extends Controller
         $username = session('username');
 
         $rows = Lelang::with(['barang', 'barang.gambarUtama'])
+            ->withMax('history', 'penawaran_harga')
+            ->withCount('history')
             ->where('status', 'dibuka')
             ->orderByDesc('id_lelang')
             ->limit(5)
             ->get()
             ->map(function ($l) {
-                $l->penawaran_tertinggi = DB::table('history_lelang')->where('id_lelang', $l->id_lelang)->max('penawaran_harga');
-                $l->jumlah_penawar = DB::table('history_lelang')->where('id_lelang', $l->id_lelang)->count();
-                $l->foto = $l->barang->gambarUtama?->nama_file;
+                $l->penawaran_tertinggi = $l->history_max_penawaran_harga;
+                $l->jumlah_penawar     = $l->history_count;
+                $l->foto               = $l->barang->gambarUtama?->nama_file;
                 return $l;
             });
 
@@ -121,72 +126,87 @@ class MasyarakatController extends Controller
         return view('masyarakat.index', compact('rows', 'jumlah_penawaran', 'jumlah_aktif'));
     }
 
-    public function penawaran()
+    public function penawaran(Request $request)
     {
-        $lelang_aktif = Lelang::with(['barang', 'barang.gambar', 'barang.gambarUtama', 'petugas'])
-            ->where('status', 'dibuka')
-            ->orderByDesc('id_lelang')
-            ->get()
-            ->map(function ($l) {
-                $l->penawaran_tertinggi = DB::table('history_lelang')->where('id_lelang', $l->id_lelang)->max('penawaran_harga');
-                $l->jumlah_penawar = DB::table('history_lelang')->where('id_lelang', $l->id_lelang)->count();
-                $l->peserta = DB::table('history_lelang')
-                    ->join('tb_masyarakat', 'history_lelang.id_user', '=', 'tb_masyarakat.id_user')
-                    ->where('history_lelang.id_lelang', $l->id_lelang)
-                    ->select('tb_masyarakat.nama_lengkap', DB::raw('MAX(history_lelang.penawaran_harga) as penawaran_harga'))
-                    ->groupBy('history_lelang.id_user', 'tb_masyarakat.nama_lengkap')
-                    ->orderByDesc('penawaran_harga')
-                    ->get();
-                return $l;
-            });
+        $search    = $request->input('search', '');
+        $harga_min = $request->input('harga_min');
+        $harga_max = $request->input('harga_max');
+        $kategori  = $request->input('kategori');
 
-        $username = session('username');
-        $mas = Masyarakat::where('username', $username)->first();
+        $query = Lelang::with([
+            'barang',
+            'barang.gambar',
+            'barang.gambarUtama',
+            'barang.kategori',
+            'barang.ratings.masyarakat',
+            'petugas'
+        ])
+            ->withMax('history', 'penawaran_harga')
+            ->withCount('history')
+            ->where('status', 'dibuka')
+            ->whereHas('barang', function ($q) use ($search, $harga_min, $harga_max, $kategori) {
+                if ($search)    $q->where('nama_barang', 'like', "%{$search}%");
+                if ($harga_min) $q->where('harga_awal', '>=', (int) $harga_min);
+                if ($harga_max) $q->where('harga_awal', '<=', (int) $harga_max);
+                if ($kategori)  $q->where('id_kategori', $kategori);
+            })
+            ->orderByDesc('id_lelang')
+            ->get();
+
+        // Load semua peserta per lelang dalam 1 query
+        $idLelangList = $query->pluck('id_lelang')->all();
+        $pesertaByLelang = DB::table('history_lelang')
+            ->join('tb_masyarakat', 'history_lelang.id_user', '=', 'tb_masyarakat.id_user')
+            ->whereIn('history_lelang.id_lelang', $idLelangList)
+            ->select('history_lelang.id_lelang', 'tb_masyarakat.nama_lengkap', DB::raw('MAX(history_lelang.penawaran_harga) as penawaran_harga'))
+            ->groupBy('history_lelang.id_lelang', 'history_lelang.id_user', 'tb_masyarakat.nama_lengkap')
+            ->orderByDesc('penawaran_harga')
+            ->get()
+            ->groupBy('id_lelang');
+
+        $query = $query->map(function ($l) use ($pesertaByLelang) {
+            $l->penawaran_tertinggi = $l->history_max_penawaran_harga;
+            $l->jumlah_penawar     = $l->history_count;
+            $l->peserta            = $pesertaByLelang->get($l->id_lelang, collect());
+            return $l;
+        });
+
+        $lelang_aktif = $query;
+        $tb_kategori  = Cache::remember('kategori.all', 3600, fn() => \App\Models\Kategori::orderBy('nama_kategori')->get());
+        $username     = session('username');
+        $mas          = Masyarakat::where('username', $username)->first();
+
+        // Get wishlist user untuk cek status favorit
+        $id_user = session('id_user');
+        $wishlist_ids = $id_user ? \App\Models\Wishlist::where('id_user', $id_user)->pluck('id_barang')->toArray() : [];
 
         $history = HistoryLelang::with(['barang', 'lelang', 'masyarakat'])
             ->join('tb_masyarakat', 'history_lelang.id_user', '=', 'tb_masyarakat.id_user')
             ->where('tb_masyarakat.username', $username)
             ->select('history_lelang.*')
             ->orderByDesc('id_history')
-            ->get();
+            ->paginate(10);
 
-        return view('masyarakat.penawaran', compact('lelang_aktif', 'mas', 'history'));
+        return view('masyarakat.penawaran', compact('lelang_aktif', 'mas', 'history', 'tb_kategori', 'search', 'harga_min', 'harga_max', 'kategori', 'wishlist_ids'));
     }
 
     public function simpanPenawaran(Request $request)
     {
-        $lelang = Lelang::where('id_lelang', $request->input('id_lelang'))->first();
+        $lelang = Lelang::with('barang')->where('id_lelang', $request->input('id_lelang'))->first();
 
-        // Backend guard: reject if closed or timer expired
         if (!$lelang || $lelang->status !== 'dibuka') {
             return redirect()->route('masyarakat.penawaran', ['info' => 'ditutup']);
         }
         if ($lelang->timer_end && now()->gt($lelang->timer_end)) {
-            // Auto-close it now
-            $top = DB::table('history_lelang')
-                ->where('id_lelang', $lelang->id_lelang)->orderByDesc('penawaran_harga')->first();
-            $lelang->update([
-                'status'      => 'ditutup',
-                'harga_akhir' => $top ? $top->penawaran_harga : 0,
-                'id_user'     => $top ? $top->id_user : 0,
-            ]);
+            $this->lelangService->autoClose($lelang);
             return redirect()->route('masyarakat.penawaran', ['info' => 'ditutup']);
         }
 
-        $penawaran_baru = (int) $request->input('penawaran_harga');
-        $tertinggi = DB::table('history_lelang')->where('id_lelang', $lelang->id_lelang)->max('penawaran_harga') ?? $lelang->barang->harga_awal;
-        if ($penawaran_baru < $tertinggi + 1000) {
-            return redirect()->route('masyarakat.penawaran', ['info' => 'min_bid']);
+        try {
+            $this->lelangService->bid($lelang, (int) $request->input('id_user'), (int) $request->input('id_barang'), (int) $request->input('penawaran_harga'));
+        } catch (\InvalidArgumentException $e) {
+            return redirect()->route('masyarakat.penawaran', ['info' => $e->getMessage()]);
         }
-
-        HistoryLelang::create([
-            'id_lelang'       => $request->input('id_lelang'),
-            'id_barang'       => $request->input('id_barang'),
-            'id_user'         => $request->input('id_user'),
-            'penawaran_harga' => $penawaran_baru,
-        ]);
-        // Reset timer on new bid
-        $lelang->update(['timer_end' => now()->addMinutes(6)]);
 
         return redirect()->route('masyarakat.penawaran', ['info' => 'simpan']);
     }
@@ -196,7 +216,13 @@ class MasyarakatController extends Controller
         $id_history    = $request->input('id_history');
         $penawaran_baru = (int) $request->input('penawaran_harga');
 
-        $existing = HistoryLelang::find($id_history);
+        $existing = HistoryLelang::findOrFail($id_history);
+        
+        // Ownership check
+        if ($existing->id_user !== session('id_user')) {
+            abort(403, 'Unauthorized action.');
+        }
+        
         if ($existing) {
             $tertinggi = DB::table('history_lelang')
                 ->where('id_lelang', $existing->id_lelang)
@@ -207,6 +233,13 @@ class MasyarakatController extends Controller
             if ($penawaran_baru < $base + 1000) {
                 return redirect()->route('masyarakat.penawaran', ['info' => 'min_bid']);
             }
+            
+            // Validate max bid (20x harga_awal)
+            $max_bid = $lelang?->barang?->harga_awal * 20;
+            if ($max_bid && $penawaran_baru > $max_bid) {
+                return redirect()->route('masyarakat.penawaran', ['info' => 'max_bid'])
+                    ->with('error_message', 'Penawaran tidak wajar!');
+            }
         }
 
         HistoryLelang::where('id_history', $id_history)
@@ -215,25 +248,37 @@ class MasyarakatController extends Controller
         return redirect()->route('masyarakat.penawaran', ['info' => 'update']);
     }
 
-    public function hapusPenawaran(Request $request)
+    public function hapusPenawaran($id)
     {
-        HistoryLelang::where('id_history', $request->input('id_history'))->delete();
+        $history = HistoryLelang::findOrFail($id);
+        
+        // Ownership check
+        if ($history->id_user !== session('id_user')) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $history->delete();
 
         return redirect()->route('masyarakat.penawaran', ['info' => 'hapus']);
     }
 
     public function fakturPdf($id_lelang)
     {
-        $id_user = session('id_user');
-
         $lelang = Lelang::with(['barang', 'pemenang'])->findOrFail($id_lelang);
 
-        // Hanya pemenang yang boleh akses
-        if ($lelang->status !== 'ditutup' || (int)$lelang->id_user !== (int)$id_user) {
-            abort(403, 'Anda bukan pemenang lelang ini.');
+        // Petugas/admin boleh akses semua faktur
+        $id_user    = session('id_user');
+        $id_petugas = session('id_petugas');
+
+        if (!$id_petugas) {
+            // Hanya pemenang yang boleh akses
+            if ($lelang->status !== 'ditutup' || (int)$lelang->id_user !== (int)$id_user) {
+                abort(403, 'Anda bukan pemenang lelang ini.');
+            }
         }
 
-        $nomor_faktur = 'LXB-' . strtoupper(substr(md5($id_lelang . $id_user), 0, 8));
+        $nomor_faktur = $lelang->nomor_faktur
+            ?? 'LXB-' . strtoupper(substr(md5($id_lelang . $lelang->id_user), 0, 8));
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('shared.faktur_pdf', [
             'lelang'       => $lelang,

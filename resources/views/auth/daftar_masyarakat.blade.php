@@ -209,6 +209,16 @@
             <i class="fas fa-times-circle" style="flex-shrink:0;margin-top:.1rem"></i>
             <span>Username sudah digunakan. Silakan pilih username yang berbeda.</span>
           </div>
+        @elseif(request('info') === 'email_required')
+          <div class="alert-danger">
+            <i class="fas fa-times-circle" style="flex-shrink:0;margin-top:.1rem"></i>
+            <span>Email wajib diisi untuk verifikasi akun.</span>
+          </div>
+        @elseif(request('info') === 'email_exists')
+          <div class="alert-danger">
+            <i class="fas fa-times-circle" style="flex-shrink:0;margin-top:.1rem"></i>
+            <span>Email sudah terdaftar. Gunakan email lain atau <a href="{{ route('login.masyarakat') }}" style="color:var(--danger);font-weight:600">masuk di sini</a>.</span>
+          </div>
         @endif
 
         <div class="reg-card">
@@ -258,14 +268,13 @@
             </div>
 
             <div class="form-group-m">
-              <label class="form-label-m" for="email-field">
-                Email <span class="opt">(opsional)</span>
-              </label>
+              <label class="form-label-m" for="email-field">Email</label>
               <div class="input-wrap">
                 <i class="fas fa-envelope input-icon"></i>
                 <input type="email" id="email-field" name="email" class="form-control-m"
-                  placeholder="contoh@email.com">
+                  placeholder="contoh@email.com" required>
               </div>
+              <div class="form-hint">Email digunakan untuk verifikasi akun dan notifikasi lelang.</div>
             </div>
 
             <button type="submit" class="btn-reg">
@@ -285,7 +294,7 @@
           <p>Proses pendaftaran mudah, cepat, dan gratis</p>
           <div class="side-steps">
             <div class="side-step"><div class="side-step-n">1</div> Isi formulir dengan data valid</div>
-            <div class="side-step"><div class="side-step-n">2</div> Tunggu verifikasi dari petugas</div>
+            <div class="side-step"><div class="side-step-n">2</div> Verifikasi email dengan kode OTP</div>
             <div class="side-step"><div class="side-step-n">3</div> Login dan ikuti lelang aktif</div>
             <div class="side-step"><div class="side-step-n">4</div> Menangkan dan raih barang impian</div>
           </div>

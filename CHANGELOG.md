@@ -5,6 +5,102 @@
 
 ---
 
+## [Unreleased]
+
+### ✨ Ditambahkan
+
+| Fitur | Keterangan |
+|-------|------------|
+| **Sistem Konfirmasi Kemenangan** | Pemenang lelang wajib konfirmasi dalam 24 jam via email link atau halaman konfirmasi. Status tracking: `menunggu_konfirmasi`, `dikonfirmasi`, `dibatalkan`, `selesai`. Scheduled job otomatis mengirim reminder H-1 dan memproses timeout |
+| **Auto-Reassignment Pemenang** | Jika pemenang tidak konfirmasi dalam 24 jam, sistem otomatis assign ke bidder tertinggi berikutnya. Proses berulang hingga ada yang konfirmasi atau tidak ada bidder tersisa |
+| **Wishlist System** | User dapat menyimpan barang favorit ke wishlist. Toggle wishlist via AJAX, badge counter real-time, halaman dedicated `/masyarakat/wishlist` |
+| **Rating & Review System** | Pemenang dapat memberikan rating 1-5 bintang dan komentar setelah konfirmasi kemenangan. Rating ditampilkan di detail barang dengan rata-rata dan jumlah review |
+| **Bukti Pembayaran** | Upload bukti transfer (JPG/PNG max 5MB) setelah konfirmasi menang. Admin dapat verifikasi (terima/tolak) dengan catatan. Email notifikasi otomatis ke user |
+| **Riwayat Penawaran User** | Halaman `/masyarakat/riwayat` menampilkan semua lelang yang pernah diikuti dengan status menang/kalah. Detail page menampilkan timeline lengkap semua bid user |
+| **Enhanced Admin Dashboard** | Statistik baru: jumlah menunggu konfirmasi, jumlah bukti bayar pending verifikasi, total pendapatan. Quick action cards ke halaman penting |
+| **Export Laporan Excel** | Export laporan lelang ke format `.xlsx` via `maatwebsite/excel`. Support filter by status konfirmasi. Kolom lengkap: barang, tanggal, harga, pemenang, invoice, bukti bayar |
+| **Activity Log Viewer** | Audit trail aktivitas admin/petugas: tambah/update/hapus barang, buka/tutup lelang, verifikasi bukti bayar. Filter by action type & date range. Pagination 50 per page |
+| **Enhanced Search & Filter** | Filter laporan by status konfirmasi dengan dropdown. Export button respect filter yang aktif. UI streamlined dengan reset button |
+| **Kategori Barang** | Model `Kategori`, migration `tb_kategori`, `KategoriSeeder`, dan kolom `id_kategori` di `tb_barang` — sistem kategorisasi barang lelang |
+| **Email Notifikasi Lengkap** | Mailable baru: `WelcomeMail`, `OutbidMail`, `AuctionOpenedMail`, `AuctionClosedMail`, `AuctionWonMail`, `ResetCodeMail`, `LelangPemenangMail`, `ReminderKonfirmasiMail`, `BatalKonfirmasiMail`, `PemenangBaruMail`, `BuktiPembayaranStatusMail`. Semua queued untuk background processing |
+| **Alur Lupa Password (Email)** | Halaman `lupa_verifikasi.blade.php` dan `lupa_selesai.blade.php` — reset password via kode verifikasi yang dikirim ke email |
+| **Laravel Cloud Config** | File `LARAVEL_CLOUD.md` — panduan lengkap deployment ke Laravel Cloud dengan konfigurasi optimal |
+
+### 🔄 Perubahan
+
+| Komponen | Keterangan |
+|----------|------------|
+| **Model Lelang** | Kolom baru: `nomor_faktur`, `status_konfirmasi`, `tanggal_konfirmasi`, `batas_konfirmasi`, `catatan_admin`, `bukti_pembayaran`, `tanggal_bayar`. Relasi baru: `pemenang`, `ratings` |
+| **Model Masyarakat** | Relasi baru: `wishlist`, `ratings`, `riwayatPemenang` |
+| **Model Barang** | Relasi baru: `wishlist`, `ratings` via `hasManyThrough` |
+| **Admin Navigation** | Link baru: Activity Log (administrator only) |
+| **Laporan Page** | Export Excel button, enhanced filtering UI |
+
+### 🧪 Testing
+
+| Coverage | Keterangan |
+|----------|------------|
+| **53 Tests, 159 Assertions** | Full test suite untuk semua fitur baru: konfirmasi kemenangan, wishlist, rating, bukti pembayaran, riwayat. 100% passing |
+| **Feature Tests** | `LelangKonfirmasiTest`, `LelangTimeoutTest`, `WishlistTest`, `RatingFeatureTest`, `BuktiPembayaranTest` dengan session auth helpers |
+| **Factory Support** | `KategoriFactory` untuk test data generation |
+
+---
+
+## [1.6.0] — 2026-06-04
+
+### 🎨 UI Overhaul
+
+| Komponen | Keterangan |
+|----------|------------|
+| **`luxbid.css`** | File CSS baru (`public/assets/luxbid.css`, ~1390 baris) — design system terpusat untuk seluruh aplikasi |
+| **Landing Page (`home.blade.php`)** | Redesign besar-besaran: layout, warna, tipografi, dan komponen diperbarui secara menyeluruh |
+| **Layout Petugas (`layouts/petugas.blade.php`)** | Refactor besar sidebar dan struktur layout panel petugas/admin |
+| **Halaman Auth** | `login.blade.php`, `login_masyarakat.blade.php`, `daftar_masyarakat.blade.php`, `lupa_password.blade.php` — UI diperbarui sepenuhnya |
+| **Dashboard Masyarakat** | `masyarakat/index.blade.php` — tampilan diperbarui |
+| **Dashboard Admin/Petugas** | `administrator/index.blade.php`, `petugas/index.blade.php` — tampilan diperbarui |
+| **Halaman Statis** | `bantuan.blade.php`, `kebijakan.blade.php`, `kontak.blade.php` — UI diperbarui konsisten dengan tema baru |
+
+---
+
+## [1.5.1] — 2026-05-26
+
+### 🐛 Diperbaiki
+
+| Bug | Solusi |
+|-----|--------|
+| **Hapus barang gagal** | `PetugasController@hapusBarang` diperbaiki — penghapusan cascade (foto fisik + record terkait) ditangani dengan benar |
+
+---
+
+## [1.5.0] — 2026-05-12
+
+### ✨ Ditambahkan
+
+| Fitur | Keterangan |
+|-------|------------|
+| **INSTALLATION.md** | Panduan instalasi lengkap ditambahkan |
+| **Build Assets** | `package-lock.json`, `public/build/manifest.json`, `public/build/assets/` — hasil build Vite disertakan |
+
+### 🎨 Perubahan UI
+
+| Halaman | Keterangan |
+|---------|-----------|
+| **Semua halaman** | Penyesuaian minor icon dan tampilan pasca-refactor v1.4.2 |
+| **Halaman penawaran masyarakat** | Perbaikan tampilan dan interaksi |
+| **Panel petugas/admin** | Perbaikan konsistensi tampilan barang, laporan, aktivasi |
+| **petugas.blade.php** | Perbaikan teks/label pada halaman manajemen petugas |
+
+### 🔄 Lainnya
+
+| Komponen | Keterangan |
+|----------|------------|
+| **Logo** | File `public/assets/images/logo.png` diperbarui |
+| **README.md** | Diperbarui dengan informasi tambahan |
+| **`scheduler.bat`** | File batch scheduler untuk Windows ditambahkan |
+| **`HapusBarangKadaluarsa` command** | Penyesuaian minor pada command scheduler |
+
+---
+
 ## [1.4.2] — 2026-05-12
 
 ### 🎨 Refactor UI

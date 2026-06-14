@@ -92,7 +92,7 @@
         <div class="list-item-card">
           <div class="lic-img">
             @if($l->foto)
-              <img src="{{ asset('uploads/barang/'.$l->foto) }}" alt="{{ $l->barang->nama_barang }}" style="width:100%;height:100%;object-fit:cover">
+              <img src="{{ asset('storage/barang/'.$l->foto) }}" alt="{{ $l->barang->nama_barang }}" style="width:100%;height:100%;object-fit:cover">
             @else
               <i class="bi bi-box-seam" style="font-size:1.75rem;color:var(--text-3)"></i>
             @endif

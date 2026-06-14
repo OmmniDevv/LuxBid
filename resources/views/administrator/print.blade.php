@@ -26,8 +26,8 @@ tr:nth-child(even){background:#fafafa}
       <td>{{ $d->barang->nama_penjual ?? '—' }}</td>
       <td>{{ $d->tgl_lelang }}</td>
       <td>{{ $d->_pemenang ?? '—' }}</td>
-      <td>{{ $d->barang ? 'Rp '.number_format($d->barang->harga_awal) : '—' }}</td>
-      <td>{{ $d->_harga_tertinggi ? 'Rp '.number_format($d->_harga_tertinggi) : '—' }}</td>
+      <td>{{ $d->barang ? 'Rp '.number_format($d->barang->harga_awal, 0, ',', '.') : '—' }}</td>
+      <td>{{ $d->_harga_tertinggi ? 'Rp '.number_format($d->_harga_tertinggi, 0, ',', '.') : '—' }}</td>
       <td>{{ ucfirst($d->status) }}</td>
     </tr>
     @endforeach

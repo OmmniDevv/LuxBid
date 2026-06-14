@@ -32,13 +32,15 @@
   <ul class="mn-links" id="mn-links">
     <li><a href="{{ route('masyarakat.index') }}" class="{{ $current === 'masyarakat.index' ? 'active' : '' }}"><i class="fas fa-home"></i> Beranda</a></li>
     <li><a href="{{ route('masyarakat.penawaran') }}" class="{{ $current === 'masyarakat.penawaran' ? 'active' : '' }}"><i class="fas fa-gavel"></i> Penawaran</a></li>
+    <li><a href="{{ route('masyarakat.wishlist') }}" class="{{ str_contains($current, 'wishlist') ? 'active' : '' }}"><i class="fas fa-heart"></i> Favorit</a></li>
+    <li><a href="{{ route('masyarakat.riwayat') }}" class="{{ str_contains($current, 'riwayat') ? 'active' : '' }}"><i class="fas fa-history"></i> Riwayat</a></li>
   </ul>
   <div class="mn-right">
     @php $user = \App\Models\Masyarakat::find(session('id_user')); @endphp
     <a href="{{ route('masyarakat.profile') }}" class="mn-user" title="Profil saya" style="text-decoration:none">
       <div class="mn-avatar">
         @if($user && $user->foto)
-          <img src="{{ asset('uploads/profile/'.$user->foto) }}" alt="{{ $username }}">
+          <img src="{{ asset('storage/profile/'.$user->foto) }}" alt="{{ $username }}">
         @else
           {{ $initial }}
         @endif

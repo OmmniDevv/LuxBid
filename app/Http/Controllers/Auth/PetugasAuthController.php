@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Petugas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class PetugasAuthController extends Controller
 {
@@ -18,9 +19,10 @@ class PetugasAuthController extends Controller
         $username = $request->input('username');
         $password = $request->input('password');
 
-        $petugas = Petugas::where('username', $username)->where('password', $password)->first();
+        $petugas = Petugas::where('username', $username)->first();
 
-        if ($petugas) {
+        if ($petugas && Hash::check($password, $petugas->password)) {
+            $request->session()->regenerate();
             session([
                 'id_petugas' => $petugas->id_petugas,
                 'username'   => $username,

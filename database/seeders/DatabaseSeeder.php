@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,8 +16,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('tb_petugas')->insert([
-            ['id_petugas' => 1, 'nama_petugas' => 'Administrator', 'username' => 'admin', 'password' => 'admin', 'id_level' => 1],
-            ['id_petugas' => 2, 'nama_petugas' => 'Petugas', 'username' => 'petugas', 'password' => 'petugas', 'id_level' => 2],
+            ['id_petugas' => 1, 'nama_petugas' => 'Administrator', 'username' => 'admin', 'password' => Hash::make('admin'), 'id_level' => 1],
+            ['id_petugas' => 2, 'nama_petugas' => 'Petugas', 'username' => 'petugas', 'password' => Hash::make('petugas'), 'id_level' => 2],
         ]);
 
         DB::table('tb_masyarakat')->insert([

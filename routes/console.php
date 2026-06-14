@@ -10,3 +10,9 @@ Artisan::command('inspire', function () {
 
 // Hapus barang kadaluarsa setiap hari pukul 01:00 WIB
 Schedule::command('lelang:hapus-barang-kadaluarsa')->dailyAt('01:00')->timezone('Asia/Jakarta');
+
+// Proses batas konfirmasi setiap jam
+Schedule::command('lelang:proses-batas-konfirmasi')->hourly()->timezone('Asia/Jakarta');
+
+// Notifikasi lelang akan ditutup setiap 15 menit
+Schedule::command('lelang:notifikasi-akan-ditutup')->everyFifteenMinutes()->timezone('Asia/Jakarta');

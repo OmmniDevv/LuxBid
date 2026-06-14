@@ -38,7 +38,7 @@
       @csrf
       <div class="profile-foto-wrap">
         @if($user->foto)
-          <img src="{{ asset('uploads/profile/'.$user->foto) }}" class="profile-avatar" alt="Foto Profil">
+          <img src="{{ asset('storage/profile/'.$user->foto) }}" class="profile-avatar" alt="Foto Profil">
         @else
           <div class="profile-avatar-placeholder">{{ strtoupper(substr($user->nama_lengkap,0,1)) }}</div>
         @endif

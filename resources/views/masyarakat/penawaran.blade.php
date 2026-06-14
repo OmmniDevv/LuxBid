@@ -38,6 +38,42 @@
 @if(request('info')=='hapus')<div class="alert-m alert-warn-m fade-up"><i class="fas fa-exclamation-triangle alert-m-icon"></i><span>Penawaran berhasil dihapus.</span><button class="alert-close" onclick="this.closest('.alert-m').remove()">×</button></div>@endif
 @if(request('info')=='ditutup')<div class="alert-m alert-warn-m fade-up"><i class="fas fa-exclamation-triangle alert-m-icon"></i><span>Lelang sudah ditutup. Penawaran tidak dapat diterima.</span><button class="alert-close" onclick="this.closest('.alert-m').remove()">×</button></div>@endif
 @if(request('info')=='min_bid')<div class="alert-m alert-warn-m fade-up"><i class="fas fa-exclamation-triangle alert-m-icon"></i><span>Penawaran ditolak. Minimal penambahan adalah Rp 1.000 dari penawaran tertinggi saat ini.</span><button class="alert-close" onclick="this.closest('.alert-m').remove()">×</button></div>@endif
+@if(request('info')=='max_bid')<div class="alert-m alert-warn-m fade-up"><i class="fas fa-exclamation-triangle alert-m-icon"></i><span>{{ session('error_message') }}</span><button class="alert-close" onclick="this.closest('.alert-m').remove()">×</button></div>@endif
+
+{{-- Search & Filter Form --}}
+<div class="card-m fade-up delay-1" style="margin-bottom:1.25rem">
+  <div class="card-m-body">
+    <form method="GET" action="{{ route('masyarakat.penawaran') }}">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:.75rem;align-items:end;flex-wrap:wrap">
+        <div>
+          <label class="form-label-m" style="font-size:.78rem">Cari Barang</label>
+          <input type="text" name="search" class="form-control-m" placeholder="Nama barang..." value="{{ $search ?? '' }}">
+        </div>
+        <div>
+          <label class="form-label-m" style="font-size:.78rem">Kategori</label>
+          <select name="kategori" class="form-control-m" style="padding-left:1rem">
+            <option value="">Semua Kategori</option>
+            @foreach($tb_kategori as $k)
+              <option value="{{ $k->id_kategori }}" {{ ($kategori ?? '') == $k->id_kategori ? 'selected' : '' }}>{{ $k->nama_kategori }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div>
+          <label class="form-label-m" style="font-size:.78rem">Harga Min (Rp)</label>
+          <input type="number" name="harga_min" class="form-control-m" placeholder="0" value="{{ $harga_min ?? '' }}" min="0">
+        </div>
+        <div>
+          <label class="form-label-m" style="font-size:.78rem">Harga Maks (Rp)</label>
+          <input type="number" name="harga_max" class="form-control-m" placeholder="Tak terbatas" value="{{ $harga_max ?? '' }}" min="0">
+        </div>
+        <div style="display:flex;gap:.5rem">
+          <button type="submit" class="btn-m btn-primary-m" style="white-space:nowrap"><i class="fas fa-search"></i> Cari</button>
+          <a href="{{ route('masyarakat.penawaran') }}" class="btn-m btn-outline-m" style="white-space:nowrap">Reset</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
 @if($lelang_aktif->isNotEmpty())
 <div class="fade-up delay-1" style="margin-bottom:.75rem">
@@ -51,7 +87,7 @@
 @php $thumb = $d->barang->gambar->first(); @endphp
 <div class="auction-card" style="padding:0;overflow:hidden">
   @if($thumb)
-    <img src="{{ asset('uploads/barang/'.$thumb->nama_file) }}" class="auction-card-img" onclick="openDetail({{ $d->id_lelang }})" style="cursor:pointer">
+    <img src="{{ asset('storage/barang/'.$thumb->nama_file) }}" class="auction-card-img" onclick="openDetail({{ $d->id_lelang }})" style="cursor:pointer">
   @else
     <div class="auction-card-img-placeholder" onclick="openDetail({{ $d->id_lelang }})" style="cursor:pointer"><i class="bi bi-box-seam"></i></div>
   @endif
@@ -61,13 +97,14 @@
       <span class="badge-m badge-open" style="font-size:.68rem">Live</span>
     </div>
     <div class="auction-card-name">{{ $d->barang->nama_barang }}</div>
+    @if($d->barang->kategori)<div style="margin-bottom:.35rem"><span class="badge-m" style="background:var(--gold-p);color:var(--ink-s);font-size:.68rem;padding:.15rem .5rem">{{ $d->barang->kategori->nama_kategori }}</span></div>@endif
     <div class="auction-card-info">
-      <div class="auction-card-row"><span class="auction-card-row-label">Harga Awal</span><span class="auction-card-row-val">Rp {{ number_format($d->barang->harga_awal) }}</span></div>
+      <div class="auction-card-row"><span class="auction-card-row-label">Harga Awal</span><span class="auction-card-row-val">Rp {{ number_format($d->barang->harga_awal, 0, ',', '.') }}</span></div>
       <div class="auction-card-row"><span class="auction-card-row-label">Penawaran</span><span class="auction-card-row-val">{{ $d->jumlah_penawar }} penawar</span></div>
       @if($d->penawaran_tertinggi)
       <div class="auction-card-row" style="margin-top:.25rem;padding-top:.5rem;border-top:1px solid var(--gold-ln2)">
         <span class="auction-card-row-label" style="font-weight:600;color:var(--success)">Tertinggi</span>
-        <span class="auction-card-price">Rp {{ number_format($d->penawaran_tertinggi) }}</span>
+        <span class="auction-card-price">Rp {{ number_format($d->penawaran_tertinggi, 0, ',', '.') }}</span>
       </div>
       @endif
     </div>
@@ -81,6 +118,12 @@
   </div>
   <div class="auction-card-footer" style="padding:.75rem 1rem">
     <div style="display:flex;gap:.5rem">
+      <form method="POST" action="{{ route('masyarakat.wishlist.toggle', $d->barang->id_barang) }}" style="display:inline">
+        @csrf
+        <button type="submit" class="btn-m" style="padding:.6rem .75rem;background:{{ in_array($d->barang->id_barang, $wishlist_ids) ? 'var(--gold)' : 'var(--surface-2)' }};color:{{ in_array($d->barang->id_barang, $wishlist_ids) ? 'var(--ink)' : 'var(--ink-m)' }};border:1px solid var(--border)" title="{{ in_array($d->barang->id_barang, $wishlist_ids) ? 'Hapus dari favorit' : 'Tambah ke favorit' }}">
+          <i class="{{ in_array($d->barang->id_barang, $wishlist_ids) ? 'fas' : 'far' }} fa-heart"></i>
+        </button>
+      </form>
       <button class="btn-m btn-outline-m" style="flex:1;padding:.6rem" onclick="openDetail({{ $d->id_lelang }})"><i class="fas fa-eye"></i> Detail</button>
       <button class="btn-m btn-primary-m" style="flex:2" id="btn-tawar-{{ $d->id_lelang }}" onclick="openModal('modal-tawar{{ $d->id_lelang }}')"><i class="fas fa-gavel"></i> Tawar</button>
     </div>
@@ -99,11 +142,11 @@
     <div class="modal-m-body">
       @if($gambar_arr->isNotEmpty())
       <div style="margin-bottom:1rem">
-        <img src="{{ asset('uploads/barang/'.$gambar_arr->first()->nama_file) }}" class="gallery-main" id="gallery-main-{{ $d->id_lelang }}" onclick="openLightbox(this.src)" alt="">
+        <img src="{{ asset('storage/barang/'.$gambar_arr->first()->nama_file) }}" class="gallery-main" id="gallery-main-{{ $d->id_lelang }}" onclick="openLightbox(this.src)" alt="">
         @if($gambar_arr->count()>1)
         <div class="gallery-thumbs">
           @foreach($gambar_arr as $gi=>$g)
-          <img src="{{ asset('uploads/barang/'.$g->nama_file) }}" class="gallery-thumb {{ $gi==0?'active':'' }}" onclick="switchGallery(this,'gallery-main-{{ $d->id_lelang }}')" alt="">
+          <img src="{{ asset('storage/barang/'.$g->nama_file) }}" class="gallery-thumb {{ $gi==0?'active':'' }}" onclick="switchGallery(this,'gallery-main-{{ $d->id_lelang }}')" alt="">
           @endforeach
         </div>
         @endif
@@ -118,8 +161,8 @@
           <span style="font-size:.75rem;font-weight:400;font-family:inherit;color:var(--ink-m);margin-left:.5rem">Lot #{{ str_pad($d->id_lelang,4,'0',STR_PAD_LEFT) }}</span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;font-size:.83rem">
-          <div><span style="color:var(--ink-m)">Harga Awal</span><br><strong>Rp {{ number_format($d->barang->harga_awal) }}</strong></div>
-          <div><span style="color:var(--ink-m)">Penawaran Tertinggi</span><br><strong style="color:var(--success)">{{ $d->penawaran_tertinggi ? 'Rp '.number_format($d->penawaran_tertinggi) : '—' }}</strong></div>
+          <div><span style="color:var(--ink-m)">Harga Awal</span><br><strong>Rp {{ number_format($d->barang->harga_awal, 0, ',', '.') }}</strong></div>
+          <div><span style="color:var(--ink-m)">Penawaran Tertinggi</span><br><strong style="color:var(--success)">{{ $d->penawaran_tertinggi ? 'Rp '.number_format($d->penawaran_tertinggi, 0, ',', '.') : '—' }}</strong></div>
           <div><span style="color:var(--ink-m)">Total Penawar</span><br><strong>{{ $d->jumlah_penawar }} orang</strong></div>
           <div><span style="color:var(--ink-m)">Sisa Waktu</span><br>
             @if($d->timer_end)<span class="timer-badge" id="timer-modal-{{ $d->id_lelang }}" data-end="{{ $d->timer_end->timestamp * 1000 }}"><i class="fas fa-clock"></i> <span class="timer-val">--:--</span></span>
@@ -137,6 +180,59 @@
         @endif
       </div>
 
+      {{-- Rating & Review --}}
+      @php
+        $ratings = $d->barang->ratings;
+        $avg_rating = $ratings->isNotEmpty() ? round($ratings->avg('rating'), 1) : 0;
+        $total_ratings = $ratings->count();
+      @endphp
+      @if($total_ratings > 0)
+      <div style="margin-bottom:1rem">
+        <div style="font-size:.8rem;font-weight:600;color:var(--ink-s);margin-bottom:.5rem">
+          <i class="fas fa-star" style="color:var(--gold);margin-right:.35rem"></i>
+          Rating & Review ({{ $total_ratings }} review{{ $total_ratings > 1 ? 's' : '' }})
+        </div>
+        <div style="background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:8px;padding:1rem;margin-bottom:.75rem">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.75rem">
+            <div style="text-align:center">
+              <div style="font-size:2rem;font-weight:700;color:var(--gold)">{{ $avg_rating }}</div>
+              <div style="font-size:.7rem;color:var(--ink-m)">dari 5</div>
+            </div>
+            <div style="flex:1">
+              <div style="display:flex;gap:.2rem;margin-bottom:.25rem">
+                @for($i = 1; $i <= 5; $i++)
+                <i class="fas fa-star" style="color:{{ $i <= $avg_rating ? '#c9a84c' : '#ddd' }};font-size:1rem"></i>
+                @endfor
+              </div>
+              <div style="font-size:.75rem;color:var(--ink-m)">Berdasarkan {{ $total_ratings }} lelang selesai</div>
+            </div>
+          </div>
+        </div>
+        <div style="max-height:300px;overflow-y:auto">
+          @foreach($ratings->sortByDesc('created_at') as $r)
+          <div style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:.75rem;margin-bottom:.5rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem">
+              <div style="display:flex;align-items:center;gap:.5rem">
+                <span style="font-weight:600;color:var(--ink);font-size:.85rem">{{ $r->masyarakat->nama_lengkap ?? 'User' }}</span>
+                <div style="display:flex;gap:.1rem">
+                  @for($i = 1; $i <= 5; $i++)
+                  <i class="fas fa-star" style="color:{{ $i <= $r->rating ? '#c9a84c' : '#ddd' }};font-size:.75rem"></i>
+                  @endfor
+                </div>
+              </div>
+              @if($r->created_at)
+              <span style="font-size:.7rem;color:var(--ink-l)">{{ $r->created_at->format('d/m/Y') }}</span>
+              @endif
+            </div>
+            @if($r->komentar)
+            <div style="font-size:.8rem;color:var(--ink-s);line-height:1.5">{{ $r->komentar }}</div>
+            @endif
+          </div>
+          @endforeach
+        </div>
+      </div>
+      @endif
+
       {{-- Peserta list --}}
       @if($d->peserta->isNotEmpty())
       <div style="margin-bottom:.5rem">
@@ -148,7 +244,7 @@
             <span style="font-weight:{{ $pi==0?'600':'400' }};color:var(--ink)">{{ $p->nama_lengkap }}</span>
             @if($pi==0)<span style="font-size:.65rem;background:var(--gold);color:var(--cream);padding:.1rem .4rem;border-radius:100px;margin-left:.4rem;font-weight:700">Tertinggi</span>@endif
           </div>
-          <span style="font-weight:600;color:{{ $pi==0?'var(--success)':'var(--ink)' }}">Rp {{ number_format($p->penawaran_harga) }}</span>
+          <span style="font-weight:600;color:{{ $pi==0?'var(--success)':'var(--ink)' }}">Rp {{ number_format($p->penawaran_harga, 0, ',', '.') }}</span>
         </div>
         @endforeach
       </div>
@@ -173,8 +269,8 @@
           <div style="font-size:.8rem;color:var(--ink-m);margin-bottom:.2rem">Barang</div>
           <div style="font-weight:700;color:var(--ink);font-family:'Playfair Display',serif">{{ $d->barang->nama_barang }}</div>
           <div style="margin-top:.5rem;display:flex;justify-content:space-between;font-size:.8rem;flex-wrap:wrap;gap:.25rem">
-            <span style="color:var(--ink-m)">Harga Awal: <strong>Rp {{ number_format($d->barang->harga_awal) }}</strong></span>
-            @if($d->penawaran_tertinggi)<span style="color:var(--success)">Tertinggi: <strong>Rp {{ number_format($d->penawaran_tertinggi) }}</strong></span>@endif
+            <span style="color:var(--ink-m)">Harga Awal: <strong>Rp {{ number_format($d->barang->harga_awal, 0, ',', '.') }}</strong></span>
+            @if($d->penawaran_tertinggi)<span style="color:var(--success)">Tertinggi: <strong>Rp {{ number_format($d->penawaran_tertinggi, 0, ',', '.') }}</strong></span>@endif
           </div>
           @if($d->timer_end)
           <div style="margin-top:.5rem"><span class="timer-badge" id="timer-tawar-{{ $d->id_lelang }}" data-end="{{ $d->timer_end->timestamp * 1000 }}"><i class="fas fa-clock"></i> <span class="timer-val">--:--</span></span></div>
@@ -183,19 +279,27 @@
         <input type="hidden" name="id_lelang" value="{{ $d->id_lelang }}">
         <input type="hidden" name="id_barang" value="{{ $d->id_barang }}">
         <input type="hidden" name="id_user" value="{{ $mas->id_user ?? '' }}">
+        <input type="hidden" name="penawaran_harga" id="penawaran_harga_raw_{{ $d->id_lelang }}">
         <div class="form-group-m">
           <label class="form-label-m">Nominal Penawaran (Rp)</label>
-          <input type="number" class="form-control-m" style="padding-left:1rem;font-size:1.1rem;font-weight:600"
-                 name="penawaran_harga" placeholder="Masukkan jumlah tawaran..."
-                 min="{{ ($d->penawaran_tertinggi ?? $d->barang->harga_awal) + 1000 }}" required>
+          <input type="text" class="form-control-m bid-input" style="padding-left:1rem;font-size:1.1rem;font-weight:600"
+                 id="penawaran_harga_display_{{ $d->id_lelang }}"
+                 data-raw-id="penawaran_harga_raw_{{ $d->id_lelang }}"
+                 data-harga-awal="{{ $d->barang->harga_awal }}"
+                 data-max-bid="{{ $d->barang->harga_awal * 20 }}"
+                 data-submit-btn="submit-btn-{{ $d->id_lelang }}"
+                 placeholder="Masukkan jumlah tawaran..." required>
           <div style="font-size:.72rem;color:var(--ink-l);margin-top:.3rem">
-            Minimal: Rp {{ number_format(($d->penawaran_tertinggi ?? $d->barang->harga_awal) + 1000) }} (penambahan min. Rp 1.000)
+            Minimal: Rp {{ number_format(($d->penawaran_tertinggi ?? $d->barang->harga_awal) + 1000, 0, ',', '.') }} (penambahan min. Rp 1.000)
+          </div>
+          <div id="warning-{{ $d->id_lelang }}" style="display:none;font-size:.75rem;color:#C0392B;background:#FEF0EE;border:1px solid #F5C2C7;border-radius:6px;padding:.5rem .75rem;margin-top:.5rem">
+            <i class="fas fa-exclamation-triangle"></i> <span class="warning-text"></span>
           </div>
         </div>
       </div>
       <div class="modal-m-footer">
         <button type="button" class="btn-m btn-outline-m" onclick="closeModal('modal-tawar{{ $d->id_lelang }}')">Batal</button>
-        <button type="submit" class="btn-m btn-gold-m"><i class="fas fa-gavel"></i> Kirim Penawaran</button>
+        <button type="submit" class="btn-m btn-gold-m" id="submit-btn-{{ $d->id_lelang }}"><i class="fas fa-gavel"></i> Kirim Penawaran</button>
       </div>
     </form>
   </div>
@@ -204,7 +308,7 @@
 
 @else
 <div class="card-m fade-up delay-1" style="margin-bottom:2rem">
-  <div class="card-m-body"><div class="empty-state"><div class="empty-icon"><i class="bi bi-search"></i></div><h4>Tidak Ada Lelang Aktif</h4><p>Saat ini tidak ada lelang yang sedang berlangsung. Pantau terus untuk lelang berikutnya!</p></div></div>
+  <div class="card-m-body"><div class="empty-state"><div class="empty-icon"><i class="bi bi-search"></i></div><h4>Tidak Ada Lelang Ditemukan</h4><p>{{ ($search || $harga_min || $harga_max || $kategori) ? 'Tidak ada lelang yang cocok dengan filter Anda. Coba ubah kriteria pencarian.' : 'Saat ini tidak ada lelang yang sedang berlangsung. Pantau terus untuk lelang berikutnya!' }}</p>@if($search || $harga_min || $harga_max || $kategori)<a href="{{ route('masyarakat.penawaran') }}" class="btn-m btn-outline-m" style="margin-top:.75rem">Reset Filter</a>@endif</div></div>
 </div>
 @endif
 
@@ -219,8 +323,8 @@
         <tr>
           <td style="color:var(--ink-l)">{{ $i+1 }}</td>
           <td><strong style="color:var(--ink)">{{ $h->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong></td>
-          <td style="color:var(--ink-m)">{{ $h->barang ? 'Rp '.number_format($h->barang->harga_awal) : '—' }}</td>
-          <td style="font-weight:600;color:var(--ink)">Rp {{ number_format($h->penawaran_harga) }}</td>
+          <td style="color:var(--ink-m)">{{ $h->barang ? 'Rp '.number_format($h->barang->harga_awal, 0, ',', '.') : '—' }}</td>
+          <td style="font-weight:600;color:var(--ink)">Rp {{ number_format($h->penawaran_harga, 0, ',', '.') }}</td>
           <td>
             @if($h->penawaran_harga == $h->lelang->harga_akhir && $h->lelang->harga_akhir > 0)
               <span class="win-badge"><i class="bi bi-trophy-fill"></i> Pemenang!</span>
@@ -246,6 +350,9 @@
         @endforelse
       </tbody>
     </table>
+    @if($history->hasPages())
+    <div style="padding:.75rem 1rem">{{ $history->appends(request()->except('page'))->links() }}</div>
+    @endif
   </div>
 </div>
 
@@ -260,14 +367,24 @@
       <div class="modal-m-body">
         <div style="background:var(--gold-p);border:1px solid var(--gold-ln);border-radius:var(--rs);padding:.85rem;margin-bottom:1rem;font-size:.83rem">Barang: <strong>{{ $h->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong></div>
         <input type="hidden" name="id_history" value="{{ $h->id_history }}">
+        <input type="hidden" name="penawaran_harga" id="penawaran_harga_edit_raw_{{ $h->id_history }}">
         <div class="form-group-m">
           <label class="form-label-m">Penawaran Baru (Rp)</label>
-          <input type="number" class="form-control-m" style="padding-left:1rem" name="penawaran_harga" value="{{ $h->penawaran_harga }}" required>
+          <input type="text" class="form-control-m bid-input" style="padding-left:1rem" 
+                 id="penawaran_harga_edit_display_{{ $h->id_history }}"
+                 data-raw-id="penawaran_harga_edit_raw_{{ $h->id_history }}"
+                 data-harga-awal="{{ $h->lelang->barang->harga_awal ?? 0 }}"
+                 data-max-bid="{{ ($h->lelang->barang->harga_awal ?? 0) * 20 }}"
+                 data-submit-btn="submit-btn-edit-{{ $h->id_history }}"
+                 value="{{ number_format($h->penawaran_harga, 0, ',', '.') }}" required>
+          <div id="warning-edit-{{ $h->id_history }}" style="display:none;font-size:.75rem;color:#C0392B;background:#FEF0EE;border:1px solid #F5C2C7;border-radius:6px;padding:.5rem .75rem;margin-top:.5rem">
+            <i class="fas fa-exclamation-triangle"></i> <span class="warning-text"></span>
+          </div>
         </div>
       </div>
       <div class="modal-m-footer">
         <button type="button" class="btn-m btn-outline-m" onclick="closeModal('modal-ubah{{ $h->id_history }}')">Batal</button>
-        <button type="submit" class="btn-m btn-primary-m"><i class="fas fa-save"></i> Simpan</button>
+        <button type="submit" class="btn-m btn-primary-m" id="submit-btn-edit-{{ $h->id_history }}"><i class="fas fa-save"></i> Simpan</button>
       </div>
     </form>
   </div>
@@ -278,7 +395,11 @@
     <div class="modal-m-body" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;margin-bottom:.75rem">🗑️</div><p style="font-size:.9rem;color:var(--ink-s)">Hapus penawaran untuk <strong>{{ $h->barang->nama_barang ?? '[Data tidak tersedia]' }}</strong>?</p></div>
     <div class="modal-m-footer">
       <button class="btn-m btn-outline-m" onclick="closeModal('modal-hapus{{ $h->id_history }}')">Batal</button>
-      <a href="{{ route('masyarakat.penawaran.hapus', ['id_history'=>$h->id_history]) }}" class="btn-m btn-danger-m">Ya, Hapus</a>
+      <form method="POST" action="{{ route('masyarakat.penawaran.hapus', $h->id_history) }}" style="display:inline">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn-m btn-danger-m">Ya, Hapus</button>
+      </form>
     </div>
   </div>
 </div>
@@ -330,5 +451,45 @@ setInterval(updateTimers, 1000);
 setInterval(function(){
   fetch('/petugas/check-timer').catch(()=>{});
 }, 10000);
+
+// Thousand separator formatting for bid inputs
+document.querySelectorAll('.bid-input').forEach(function(input){
+  input.addEventListener('input', function(e){
+    let val = e.target.value.replace(/\D/g, ''); // Remove non-digits
+    let formatted = val ? parseInt(val).toLocaleString('id-ID') : '';
+    e.target.value = formatted;
+    let rawId = e.target.getAttribute('data-raw-id');
+    if(rawId) document.getElementById(rawId).value = val;
+    
+    // Validate max bid (20x harga_awal)
+    let maxBid = parseInt(e.target.getAttribute('data-max-bid'));
+    let submitBtnId = e.target.getAttribute('data-submit-btn');
+    let rawId = e.target.getAttribute('data-raw-id');
+    let warningId = rawId.includes('edit') ? rawId.replace('penawaran_harga_edit_raw_', 'warning-edit-') : rawId.replace('penawaran_harga_raw_', 'warning-');
+    let warningEl = document.getElementById(warningId);
+    let submitBtn = document.getElementById(submitBtnId);
+    
+    if(val && parseInt(val) > maxBid){
+      if(warningEl){
+        warningEl.style.display = 'block';
+        warningEl.querySelector('.warning-text').textContent = 'Penawaran tidak wajar!';
+      }
+      if(submitBtn){
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '.5';
+        submitBtn.style.cursor = 'not-allowed';
+      }
+    } else {
+      if(warningEl) warningEl.style.display = 'none';
+      if(submitBtn){
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+      }
+    }
+  });
+  // Trigger on load for pre-filled values
+  input.dispatchEvent(new Event('input'));
+});
 </script>
 @endpush

@@ -822,7 +822,7 @@
         @endphp
         <div class="auction-card rv">
           @if($l->foto)
-            <img src="{{ asset('uploads/barang/'.$l->foto) }}" class="auction-card-img" alt="{{ $l->barang->nama_barang }}">
+            <img src="{{ asset('storage/barang/'.$l->foto) }}" class="auction-card-img" alt="{{ $l->barang->nama_barang }}">
           @else
             <div class="auction-card-imgph"><i class="bi bi-box-seam"></i></div>
           @endif
