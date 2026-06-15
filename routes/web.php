@@ -20,15 +20,15 @@ Route::get('/check-timer', [PetugasController::class, 'checkTimer'])->name('petu
 Route::get('/login',  [MasyarakatAuthController::class, 'showLogin'])->name('login.masyarakat');
 Route::post('/login', [MasyarakatAuthController::class, 'login'])->name('login.masyarakat.post')->middleware('throttle:5,1');
 Route::get('/daftar',  [MasyarakatAuthController::class, 'showRegister'])->name('daftar.masyarakat');
-Route::post('/daftar', [MasyarakatAuthController::class, 'register'])->name('daftar.masyarakat.post');
+Route::post('/daftar', [MasyarakatAuthController::class, 'register'])->name('daftar.masyarakat.post')->middleware('throttle:3,1');
 Route::get('/daftar/verifikasi',         [MasyarakatAuthController::class, 'showVerifikasiDaftar'])->name('daftar.verifikasi');
 Route::post('/daftar/verifikasi',        [MasyarakatAuthController::class, 'prosesVerifikasiDaftar'])->name('daftar.verifikasi.post');
 Route::post('/daftar/kirim-ulang',       [MasyarakatAuthController::class, 'kirimUlangVerifikasiDaftar'])->name('daftar.verifikasi.kirimulang');
 Route::get('/lupa-password', [MasyarakatAuthController::class, 'showLupaPassword'])->name('lupa.password');
-Route::post('/lupa-password', [MasyarakatAuthController::class, 'lupaPasswordStep1'])->name('lupa.password.step1');
+Route::post('/lupa-password', [MasyarakatAuthController::class, 'lupaPasswordStep1'])->name('lupa.password.step1')->middleware('throttle:3,1');
 Route::get('/lupa-password/verifikasi', [MasyarakatAuthController::class, 'showVerifikasi'])->name('lupa.password.verifikasi');
-Route::post('/lupa-password/verifikasi', [MasyarakatAuthController::class, 'prosesVerifikasi'])->name('lupa.password.verifikasi.post');
-Route::post('/lupa-password/kirim-ulang', [MasyarakatAuthController::class, 'kirimUlang'])->name('lupa.password.kirimulang');
+Route::post('/lupa-password/verifikasi', [MasyarakatAuthController::class, 'prosesVerifikasi'])->name('lupa.password.verifikasi.post')->middleware('throttle:5,1');
+Route::post('/lupa-password/kirim-ulang', [MasyarakatAuthController::class, 'kirimUlang'])->name('lupa.password.kirimulang')->middleware('throttle:2,1');
 Route::get('/lupa-password/selesai', [MasyarakatAuthController::class, 'selesai'])->name('lupa.password.selesai');
 Route::get('/logout', [MasyarakatAuthController::class, 'logout'])->name('logout');
 
@@ -45,9 +45,9 @@ Route::prefix('masyarakat')->middleware('masyarakat.auth')->group(function () {
     Route::post('/penawaran/update',   [MasyarakatController::class, 'updatePenawaran'])->name('masyarakat.penawaran.update');
     Route::delete('/penawaran/{id}',   [MasyarakatController::class, 'hapusPenawaran'])->name('masyarakat.penawaran.hapus');
     Route::get('/profile',             [MasyarakatController::class, 'profile'])->name('masyarakat.profile');
-    Route::post('/profile/update',     [MasyarakatController::class, 'updateProfile'])->name('masyarakat.profile.update');
-    Route::post('/profile/password',   [MasyarakatController::class, 'updatePassword'])->name('masyarakat.profile.password');
-    Route::post('/profile/foto',       [MasyarakatController::class, 'updateFoto'])->name('masyarakat.profile.foto');
+    Route::post('/profile/update',     [MasyarakatController::class, 'updateProfile'])->name('masyarakat.profile.update')->middleware('throttle:5,1');
+    Route::post('/profile/password',   [MasyarakatController::class, 'updatePassword'])->name('masyarakat.profile.password')->middleware('throttle:5,1');
+    Route::post('/profile/foto',       [MasyarakatController::class, 'updateFoto'])->name('masyarakat.profile.foto')->middleware('throttle:3,1');
     Route::get('/faktur/{id_lelang}',  [MasyarakatController::class, 'fakturPdf'])->name('masyarakat.faktur_pdf');
     Route::get('/wishlist',            [\App\Http\Controllers\WishlistController::class, 'index'])->name('masyarakat.wishlist');
     Route::post('/wishlist/toggle/{id_barang}', [\App\Http\Controllers\WishlistController::class, 'toggle'])->name('masyarakat.wishlist.toggle');

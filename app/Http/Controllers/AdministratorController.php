@@ -66,6 +66,11 @@ class AdministratorController extends Controller
             ]);
         }
 
+        // Convert empty kategori to null
+        if ($request->has('id_kategori') && $request->input('id_kategori') === '') {
+            $request->merge(['id_kategori' => null]);
+        }
+
         $request->validate([
             'nama_barang' => 'required|string|max:255',
             'tgl'         => 'required|date',
@@ -92,6 +97,11 @@ class AdministratorController extends Controller
             ]);
         }
 
+        // Convert empty kategori to null
+        if ($request->has('id_kategori') && $request->input('id_kategori') === '') {
+            $request->merge(['id_kategori' => null]);
+        }
+
         $request->validate([
             'id_barang'   => 'required|exists:tb_barang,id_barang',
             'nama_barang' => 'required|string|max:255',
@@ -112,6 +122,24 @@ class AdministratorController extends Controller
 
     public function hapusBarang($id)
     {
+        // Check for active lelang before deletion
+        $activeLelang = Lelang::where('id_barang', $id)
+            ->where('status', 'dibuka')
+            ->exists();
+
+        if ($activeLelang) {
+            return redirect()->route('administrator.barang')
+                ->with('error', 'Tidak dapat menghapus barang yang masih memiliki lelang aktif.');
+        }
+
+        // Check for any lelang history
+        $hasLelang = Lelang::where('id_barang', $id)->exists();
+
+        if ($hasLelang) {
+            return redirect()->route('administrator.barang')
+                ->with('error', 'Tidak dapat menghapus barang yang memiliki riwayat lelang. Hubungi administrator sistem.');
+        }
+
         $this->barangService->delete((int) $id);
         ActivityLog::record('delete_barang', 'Barang', (int) $id);
 
@@ -128,6 +156,13 @@ class AdministratorController extends Controller
 
     public function simpanPetugas(Request $request)
     {
+        $request->validate([
+            'nama_petugas' => 'required|string|max:255',
+            'username' => 'required|string|max:100|unique:tb_petugas,username|alpha_dash',
+            'password' => 'required|string|min:6',
+            'id_level' => 'required|integer|exists:tb_level,id_level',
+        ]);
+
         $petugas = Petugas::create([
             'nama_petugas' => $request->input('nama_petugas'),
             'username'     => $request->input('username'),
@@ -141,13 +176,23 @@ class AdministratorController extends Controller
 
     public function updatePetugas(Request $request)
     {
-        Petugas::where('id_petugas', $request->input('id_petugas'))->update([
+        $id_petugas = $request->input('id_petugas');
+
+        $request->validate([
+            'id_petugas' => 'required|integer|exists:tb_petugas,id_petugas',
+            'nama_petugas' => 'required|string|max:255',
+            'username' => 'required|string|max:100|alpha_dash|unique:tb_petugas,username,' . $id_petugas . ',id_petugas',
+            'password' => 'required|string|min:6',
+            'id_level' => 'required|integer|exists:tb_level,id_level',
+        ]);
+
+        Petugas::where('id_petugas', $id_petugas)->update([
             'nama_petugas' => $request->input('nama_petugas'),
             'username'     => $request->input('username'),
             'password'     => Hash::make($request->input('password')),
             'id_level'     => $request->input('id_level'),
         ]);
-        ActivityLog::record('update_petugas', 'Petugas', (int) $request->input('id_petugas'), ['username' => $request->input('username')]);
+        ActivityLog::record('update_petugas', 'Petugas', (int) $id_petugas, ['username' => $request->input('username')]);
 
         return redirect()->route('administrator.petugas', ['info' => 'update']);
     }
