@@ -22,7 +22,9 @@ class LelangService
         foreach ($penerima as $m) {
             try {
                 Mail::to($m->email)->send(new AuctionOpenedMail($m->nama_lengkap, $lelang->barang->nama_barang, $lelang->barang->harga_awal));
-            } catch (\Exception) {}
+            } catch (\Exception $e) {
+                \Log::warning("Failed to send auction opened email to {$m->email}: {$e->getMessage()}");
+            }
         }
     }
 
@@ -78,7 +80,9 @@ class LelangService
                 } else {
                     Mail::to($p->email)->queue(new \App\Mail\LelangBerakhirPesertaMail($p->nama_lengkap, $nama_barang, $p->penawaran_saya, $rekomendasi));
                 }
-            } catch (\Exception) {}
+            } catch (\Exception $e) {
+                \Log::warning("Failed to send auction closed email to {$p->email}: {$e->getMessage()}");
+            }
         }
     }
 
@@ -87,24 +91,33 @@ class LelangService
      */
     public function bid(Lelang $lelang, int $id_user, int $id_barang, int $penawaran_baru): HistoryLelang
     {
-        $tertinggi = DB::table('history_lelang')->where('id_lelang', $lelang->id_lelang)->max('penawaran_harga')
-            ?? $lelang->barang->harga_awal;
+        return DB::transaction(function () use ($lelang, $id_user, $id_barang, $penawaran_baru) {
+            // Lock lelang row to prevent concurrent bids
+            $lelang = Lelang::where('id_lelang', $lelang->id_lelang)->lockForUpdate()->first();
 
-        if ($penawaran_baru < $tertinggi + 1000) {
-            throw new \InvalidArgumentException('min_bid');
-        }
-        if ($penawaran_baru > $lelang->barang->harga_awal * 20) {
-            throw new \InvalidArgumentException('max_bid');
-        }
+            // Get highest bid with row lock
+            $tertinggi = HistoryLelang::where('id_lelang', $lelang->id_lelang)
+                ->lockForUpdate()
+                ->max('penawaran_harga') ?? $lelang->barang->harga_awal;
 
-        $history = HistoryLelang::create([
-            'id_lelang'       => $lelang->id_lelang,
-            'id_barang'       => $id_barang,
-            'id_user'         => $id_user,
-            'penawaran_harga' => $penawaran_baru,
-        ]);
+            if ($penawaran_baru < $tertinggi + 1000) {
+                throw new \InvalidArgumentException('min_bid');
+            }
+            if ($penawaran_baru > $lelang->barang->harga_awal * 20) {
+                throw new \InvalidArgumentException('max_bid');
+            }
 
-        $lelang->update(['timer_end' => now()->addMinutes(6)]);
+            $history = HistoryLelang::create([
+                'id_lelang'       => $lelang->id_lelang,
+                'id_barang'       => $id_barang,
+                'id_user'         => $id_user,
+                'penawaran_harga' => $penawaran_baru,
+            ]);
+
+            $lelang->update(['timer_end' => now()->addMinutes(6)]);
+
+            return $history;
+        }, attempts: 5);
 
         $prev = DB::table('history_lelang')
             ->join('tb_masyarakat', 'history_lelang.id_user', '=', 'tb_masyarakat.id_user')
@@ -118,7 +131,9 @@ class LelangService
         if ($prev) {
             try {
                 Mail::to($prev->email)->send(new OutbidMail($prev->nama_lengkap, $lelang->barang->nama_barang, $penawaran_baru));
-            } catch (\Exception) {}
+            } catch (\Exception $e) {
+                \Log::warning("Failed to send outbid email to {$prev->email}: {$e->getMessage()}");
+            }
         }
 
         return $history;
@@ -150,7 +165,9 @@ class LelangService
                     $lelang->refresh()->load(['barang', 'pemenang']);
                     $link_konfirmasi = route('masyarakat.konfirmasi_kemenangan', $lelang->id_lelang);
                     Mail::to($pemenang->email)->queue(new \App\Mail\LelangPemenangMail($lelang, $pemenang->nama_lengkap, $nomor_faktur, $link_konfirmasi));
-                } catch (\Exception) {}
+                } catch (\Exception $e) {
+                    \Log::warning("Failed to send auto-close winner email to {$pemenang->email}: {$e->getMessage()}");
+                }
             }
         } else {
             $lelang->update([

@@ -9,7 +9,7 @@ class AdminOnly
 {
     public function handle(Request $request, Closure $next)
     {
-        if (session('id_level') != 1) {
+        if (session('id_level') !== 1) {
             abort(403, 'Akses ditolak. Hanya administrator yang diizinkan.');
         }
         return $next($request);

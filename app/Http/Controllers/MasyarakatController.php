@@ -199,6 +199,11 @@ class MasyarakatController extends Controller
             ]);
         }
 
+        // Validate user ID matches session to prevent bidding as another user
+        if ((int) $request->input('id_user') !== (int) session('id_user')) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $lelang = Lelang::with('barang')->where('id_lelang', $request->input('id_lelang'))->first();
 
         if (!$lelang || $lelang->status !== 'dibuka') {
