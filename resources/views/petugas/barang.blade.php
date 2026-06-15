@@ -79,7 +79,7 @@
       <div class="form-group-m"><label class="form-label-m">Kategori</label><select class="form-control-m" name="id_kategori" style="padding-left:1rem"><option value="">— Pilih Kategori —</option>@foreach($tb_kategori as $k)<option value="{{ $k->id_kategori }}" {{ $d->id_kategori == $k->id_kategori ? 'selected' : '' }}>{{ $k->nama_kategori }}</option>@endforeach</select></div>
       <div class="form-group-m"><label class="form-label-m">Nama Penjual</label><input type="text" class="form-control-m" name="nama_penjual" value="{{ $d->nama_penjual }}" placeholder="Nama penjual / pemilik barang..."></div>
       <div class="form-group-m"><label class="form-label-m">Tanggal</label><input type="date" class="form-control-m" style="padding-left:1rem" name="tgl" value="{{ $d->tgl }}" required></div>
-      <div class="form-group-m"><label class="form-label-m">Harga Awal (Rp)</label><input type="number" class="form-control-m" style="padding-left:1rem" name="harga_awal" value="{{ $d->harga_awal }}" min="0" required></div>
+      <div class="form-group-m"><label class="form-label-m">Harga Awal (Rp)</label><input type="hidden" name="harga_awal" id="harga_awal_raw_{{ $d->id_barang }}" value="{{ $d->harga_awal }}"><input type="text" class="form-control-m price-input" style="padding-left:1rem" data-raw-id="harga_awal_raw_{{ $d->id_barang }}" value="{{ number_format($d->harga_awal, 0, ',', '.') }}" required></div>
       <div class="form-group-m"><label class="form-label-m">Deskripsi</label><textarea class="form-control-m" style="padding-left:1rem;resize:vertical;min-height:80px" name="deskripsi_barang">{{ $d->deskripsi_barang }}</textarea></div>
       <div class="form-group-m"><label class="form-label-m">Foto Barang <span style="color:var(--ink-l);font-weight:400">(maks. 3 foto)</span></label>
         <div class="img-upload-grid">
@@ -109,7 +109,7 @@
       <div class="form-group-m"><label class="form-label-m">Kategori</label><select class="form-control-m" name="id_kategori" style="padding-left:1rem"><option value="">— Pilih Kategori —</option>@foreach($tb_kategori as $k)<option value="{{ $k->id_kategori }}">{{ $k->nama_kategori }}</option>@endforeach</select></div>
       <div class="form-group-m"><label class="form-label-m">Nama Penjual</label><input type="text" class="form-control-m" name="nama_penjual" placeholder="Nama penjual / pemilik barang..."></div>
       <div class="form-group-m"><label class="form-label-m">Tanggal</label><input type="date" class="form-control-m" style="padding-left:1rem" name="tgl" required></div>
-      <div class="form-group-m"><label class="form-label-m">Harga Awal (Rp)</label><input type="number" class="form-control-m" style="padding-left:1rem" name="harga_awal" placeholder="0" min="0" required></div>
+      <div class="form-group-m"><label class="form-label-m">Harga Awal (Rp)</label><input type="hidden" name="harga_awal" id="harga_awal_raw_new"><input type="text" class="form-control-m price-input" style="padding-left:1rem" data-raw-id="harga_awal_raw_new" placeholder="0" required></div>
       <div class="form-group-m"><label class="form-label-m">Deskripsi</label><textarea class="form-control-m" style="padding-left:1rem;resize:vertical;min-height:80px" name="deskripsi_barang" placeholder="Deskripsi singkat..."></textarea></div>
       <div class="form-group-m"><label class="form-label-m">Foto Barang <span style="color:var(--ink-l);font-weight:400">(maks. 3 foto)</span></label>
         <div class="img-upload-grid">
@@ -140,5 +140,16 @@ function clearPreviewNew(slot){const p=document.getElementById('prev-new-'+slot)
 function previewImg(input,bid,slot){if(!input.files[0])return;const r=new FileReader();r.onload=e=>{const p=document.getElementById('prev-edit-'+bid+'-'+slot);p.src=e.target.result;p.style.display='block';const b=document.getElementById('rmbtn-'+bid+'-'+slot);if(b)b.classList.add('visible')};r.readAsDataURL(input.files[0])}
 function clearPreview(bid,slot){const p=document.getElementById('prev-edit-'+bid+'-'+slot);p.src='';p.style.display='none';const b=document.getElementById('rmbtn-'+bid+'-'+slot);if(b)b.classList.remove('visible');const h=document.getElementById('hps-'+bid+'-'+slot);if(h)h.value='1';const fi=document.getElementById('slot-edit-'+bid+'-'+slot).querySelector('input[type=file]');if(fi)fi.value=''}
 function removeImg(bid,slot){clearPreview(bid,slot)}
+// Price formatting with thousand separator
+document.querySelectorAll('.price-input').forEach(function(input){
+  input.addEventListener('input',function(e){
+    let val=e.target.value.replace(/\D/g,'');
+    let formatted=val?parseInt(val).toLocaleString('id-ID'):'';
+    e.target.value=formatted;
+    let rawId=e.target.getAttribute('data-raw-id');
+    if(rawId)document.getElementById(rawId).value=val;
+  });
+  input.dispatchEvent(new Event('input'));
+});
 </script>
 @endpush
