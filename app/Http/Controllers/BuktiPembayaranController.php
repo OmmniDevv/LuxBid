@@ -28,24 +28,31 @@ class BuktiPembayaranController extends Controller
             'bukti_pembayaran' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        // Hapus bukti lama jika ada
-        if ($lelang->bukti_pembayaran) {
-            Storage::disk('public')->delete('bukti_bayar/' . $lelang->bukti_pembayaran);
-        }
-
         $file = $request->file('bukti_pembayaran');
         $filename = Str::random(40) . '.' . $file->extension();
 
         $file->storeAs('bukti_bayar', $filename, 'public');
 
-        $lelang->update([
-            'bukti_pembayaran' => $filename,
-            'tanggal_bayar' => now(),
-        ]);
+        return \DB::transaction(function () use ($lelang, $filename) {
+            // Lock record to prevent concurrent updates
+            $lelang = Lelang::where('id_lelang', $lelang->id_lelang)->lockForUpdate()->first();
 
-        \App\Services\ActivityLog::record('upload_bukti_bayar', 'Lelang', $lelang->id_lelang);
+            $oldFile = $lelang->bukti_pembayaran;
 
-        return back()->with('success', 'Bukti pembayaran berhasil diupload. Menunggu verifikasi admin.');
+            $lelang->update([
+                'bukti_pembayaran' => $filename,
+                'tanggal_bayar' => now(),
+            ]);
+
+            // Delete old file after successful DB update
+            if ($oldFile) {
+                Storage::disk('public')->delete('bukti_bayar/' . $oldFile);
+            }
+
+            \App\Services\ActivityLog::record('upload_bukti_bayar', 'Lelang', $lelang->id_lelang);
+
+            return back()->with('success', 'Bukti pembayaran berhasil diupload. Menunggu verifikasi admin.');
+        });
     }
 
     public function verifikasi(Request $request, $id_lelang)
@@ -63,52 +70,61 @@ class BuktiPembayaranController extends Controller
 
         $status = $request->input('status');
 
-        if ($status === 'dibayar') {
-            $lelang->update([
-                'status_konfirmasi' => 'dibayar',
-                'catatan_admin' => $request->input('catatan'),
+        return \DB::transaction(function () use ($lelang, $status, $request) {
+            // Lock record to prevent concurrent verifications
+            $lelang = Lelang::where('id_lelang', $lelang->id_lelang)->lockForUpdate()->first();
+
+            if ($status === 'dibayar') {
+                $lelang->update([
+                    'status_konfirmasi' => 'dibayar',
+                    'catatan_admin' => $request->input('catatan'),
+                ]);
+                $message = 'Bukti pembayaran telah diverifikasi dan diterima.';
+
+                // Kirim email notifikasi diterima
+                if ($lelang->pemenang && $lelang->pemenang->email) {
+                    \Mail::to($lelang->pemenang->email)->queue(new \App\Mail\BuktiPembayaranStatusMail(
+                        $lelang->pemenang->nama_lengkap,
+                        $lelang->barang->nama_barang,
+                        'dibayar',
+                        $request->input('catatan') ?: '',
+                        route('masyarakat.konfirmasi_kemenangan', $lelang->id_lelang)
+                    ));
+                }
+            } else {
+                $oldFile = $lelang->bukti_pembayaran;
+
+                $lelang->update([
+                    'bukti_pembayaran' => null,
+                    'tanggal_bayar' => null,
+                    'catatan_admin' => $request->input('catatan') ?: 'Bukti pembayaran ditolak.',
+                ]);
+
+                // Delete rejected file after successful DB update
+                if ($oldFile) {
+                    Storage::disk('public')->delete('bukti_bayar/' . $oldFile);
+                }
+
+                $message = 'Bukti pembayaran ditolak. Pemenang perlu upload ulang.';
+
+                // Kirim email notifikasi ditolak
+                if ($lelang->pemenang && $lelang->pemenang->email) {
+                    \Mail::to($lelang->pemenang->email)->queue(new \App\Mail\BuktiPembayaranStatusMail(
+                        $lelang->pemenang->nama_lengkap,
+                        $lelang->barang->nama_barang,
+                        'ditolak',
+                        $request->input('catatan') ?: 'Bukti pembayaran tidak jelas atau tidak sesuai.',
+                        route('masyarakat.konfirmasi_kemenangan', $lelang->id_lelang)
+                    ));
+                }
+            }
+
+            \App\Services\ActivityLog::record('verifikasi_bukti_bayar', 'Lelang', $lelang->id_lelang, [
+                'status' => $status,
+                'catatan' => $request->input('catatan'),
             ]);
-            $message = 'Bukti pembayaran telah diverifikasi dan diterima.';
 
-            // Kirim email notifikasi diterima
-            if ($lelang->pemenang && $lelang->pemenang->email) {
-                \Mail::to($lelang->pemenang->email)->queue(new \App\Mail\BuktiPembayaranStatusMail(
-                    $lelang->pemenang->nama_lengkap,
-                    $lelang->barang->nama_barang,
-                    'dibayar',
-                    $request->input('catatan') ?: '',
-                    route('masyarakat.konfirmasi_kemenangan', $lelang->id_lelang)
-                ));
-            }
-        } else {
-            // Hapus bukti yang ditolak
-            if ($lelang->bukti_pembayaran) {
-                Storage::disk('public')->delete('bukti_bayar/' . $lelang->bukti_pembayaran);
-            }
-            $lelang->update([
-                'bukti_pembayaran' => null,
-                'tanggal_bayar' => null,
-                'catatan_admin' => $request->input('catatan') ?: 'Bukti pembayaran ditolak.',
-            ]);
-            $message = 'Bukti pembayaran ditolak. Pemenang perlu upload ulang.';
-
-            // Kirim email notifikasi ditolak
-            if ($lelang->pemenang && $lelang->pemenang->email) {
-                \Mail::to($lelang->pemenang->email)->queue(new \App\Mail\BuktiPembayaranStatusMail(
-                    $lelang->pemenang->nama_lengkap,
-                    $lelang->barang->nama_barang,
-                    'ditolak',
-                    $request->input('catatan') ?: 'Bukti pembayaran tidak jelas atau tidak sesuai.',
-                    route('masyarakat.konfirmasi_kemenangan', $lelang->id_lelang)
-                ));
-            }
-        }
-
-        \App\Services\ActivityLog::record('verifikasi_bukti_bayar', 'Lelang', $lelang->id_lelang, [
-            'status' => $status,
-            'catatan' => $request->input('catatan'),
-        ]);
-
-        return back()->with('success', $message);
+            return back()->with('success', $message);
+        });
     }
 }

@@ -30,7 +30,7 @@ class LelangService
 
     public function tutup(Lelang $lelang, int $id_pemenang, int $harga_akhir): void
     {
-        $nomor_faktur = 'LXB-' . strtoupper(substr(md5($lelang->id_lelang . $id_pemenang . time()), 0, 8));
+        $nomor_faktur = 'LXB-' . strtoupper(\Illuminate\Support\Str::random(12));
 
         $lelang->update([
             'status' => 'ditutup',
@@ -147,7 +147,7 @@ class LelangService
             ->first();
 
         if ($top) {
-            $nomor_faktur = 'LXB-' . strtoupper(substr(md5($lelang->id_lelang . $top->id_user . time()), 0, 8));
+            $nomor_faktur = 'LXB-' . strtoupper(\Illuminate\Support\Str::random(12));
 
             $lelang->update([
                 'status'      => 'ditutup',

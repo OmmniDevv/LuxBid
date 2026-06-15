@@ -199,6 +199,13 @@ class MasyarakatController extends Controller
             ]);
         }
 
+        $request->validate([
+            'penawaran_harga' => 'required|numeric|min:0',
+            'id_user' => 'required|integer',
+            'id_lelang' => 'required|integer',
+            'id_barang' => 'required|integer',
+        ]);
+
         // Validate user ID matches session to prevent bidding as another user
         if ((int) $request->input('id_user') !== (int) session('id_user')) {
             abort(403, 'Unauthorized action.');
@@ -232,53 +239,63 @@ class MasyarakatController extends Controller
             ]);
         }
 
+        $request->validate([
+            'penawaran_harga' => 'required|numeric|min:0',
+            'id_history' => 'required|integer',
+        ]);
+
         $id_history    = $request->input('id_history');
         $penawaran_baru = (int) $request->input('penawaran_harga');
 
-        $existing = HistoryLelang::findOrFail($id_history);
-        
-        // Ownership check
-        if ($existing->id_user !== session('id_user')) {
-            abort(403, 'Unauthorized action.');
-        }
-        
-        if ($existing) {
+        return DB::transaction(function () use ($id_history, $penawaran_baru) {
+            // Lock row to prevent concurrent modifications
+            $existing = HistoryLelang::where('id_history', $id_history)->lockForUpdate()->firstOrFail();
+
+            // Ownership check with strict comparison
+            if ($existing->id_user !== (int) session('id_user')) {
+                abort(403, 'Unauthorized action.');
+            }
+
             $tertinggi = DB::table('history_lelang')
                 ->where('id_lelang', $existing->id_lelang)
                 ->where('id_history', '!=', $id_history)
                 ->max('penawaran_harga');
+
             $lelang = Lelang::find($existing->id_lelang);
             $base   = $tertinggi ?? ($lelang?->barang?->harga_awal ?? 0);
+
             if ($penawaran_baru < $base + 1000) {
                 return redirect()->route('masyarakat.penawaran', ['info' => 'min_bid']);
             }
-            
+
             // Validate max bid (20x harga_awal)
             $max_bid = $lelang?->barang?->harga_awal * 20;
             if ($max_bid && $penawaran_baru > $max_bid) {
                 return redirect()->route('masyarakat.penawaran', ['info' => 'max_bid'])
                     ->with('error_message', 'Penawaran tidak wajar!');
             }
-        }
 
-        HistoryLelang::where('id_history', $id_history)
-            ->update(['penawaran_harga' => $penawaran_baru]);
+            $existing->update(['penawaran_harga' => $penawaran_baru]);
 
-        return redirect()->route('masyarakat.penawaran', ['info' => 'update']);
+            return redirect()->route('masyarakat.penawaran', ['info' => 'update']);
+        });
     }
 
     public function hapusPenawaran($id)
     {
-        $history = HistoryLelang::findOrFail($id);
-        
-        // Ownership check
-        if ($history->id_user !== session('id_user')) {
-            abort(403, 'Unauthorized action.');
-        }
-        
-        $history->delete();
+        return DB::transaction(function () use ($id) {
+            // Lock row to prevent concurrent modifications
+            $history = HistoryLelang::where('id_history', $id)->lockForUpdate()->firstOrFail();
 
-        return redirect()->route('masyarakat.penawaran', ['info' => 'hapus']);
+            // Ownership check with strict comparison
+            if ($history->id_user !== (int) session('id_user')) {
+                abort(403, 'Unauthorized action.');
+            }
+
+            $history->delete();
+
+            return redirect()->route('masyarakat.penawaran', ['info' => 'hapus']);
+        });
     }
 
     public function fakturPdf($id_lelang)
