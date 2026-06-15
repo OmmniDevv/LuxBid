@@ -61,6 +61,13 @@ class PetugasController extends Controller
 
     public function simpanBarang(Request $request)
     {
+        // Clean price format (remove thousand separators)
+        if ($request->filled('harga_awal')) {
+            $request->merge([
+                'harga_awal' => str_replace(['.', ','], '', $request->input('harga_awal'))
+            ]);
+        }
+
         $request->validate([
             'nama_barang' => 'required|string|max:255',
             'tgl'         => 'required|date',
@@ -80,6 +87,13 @@ class PetugasController extends Controller
 
     public function updateBarang(Request $request)
     {
+        // Clean price format (remove thousand separators)
+        if ($request->filled('harga_awal')) {
+            $request->merge([
+                'harga_awal' => str_replace(['.', ','], '', $request->input('harga_awal'))
+            ]);
+        }
+
         $request->validate([
             'id_barang'   => 'required|exists:tb_barang,id_barang',
             'nama_barang' => 'required|string|max:255',
