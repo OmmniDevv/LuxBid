@@ -13,17 +13,17 @@ class DatabaseSeeder extends Seeder
         // Seed categories first
         $this->call(KategoriSeeder::class);
 
-        DB::table('tb_level')->insert([
+        DB::table('tb_level')->insertOrIgnore([
             ['id_level' => 1, 'level' => 'administrator'],
             ['id_level' => 2, 'level' => 'petugas'],
         ]);
 
-        DB::table('tb_petugas')->insert([
+        DB::table('tb_petugas')->insertOrIgnore([
             ['id_petugas' => 1, 'nama_petugas' => 'Administrator', 'username' => 'admin', 'password' => Hash::make('admin'), 'id_level' => 1],
             ['id_petugas' => 2, 'nama_petugas' => 'Petugas', 'username' => 'petugas', 'password' => Hash::make('petugas'), 'id_level' => 2],
         ]);
 
-        DB::table('tb_masyarakat')->insert([
+        DB::table('tb_masyarakat')->insertOrIgnore([
             [
                 'id_user' => 1,
                 'nama_lengkap' => 'abdul',
@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
-        DB::table('tb_barang')->insert([
+        DB::table('tb_barang')->insertOrIgnore([
             [
                 'id_barang' => 1,
                 'nama_barang' => 'FUJIFILM FINEPIX S4500',
@@ -53,7 +53,7 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
-        DB::table('tb_gambar_barang')->insert([
+        DB::table('tb_gambar_barang')->insertOrIgnore([
             ['id_gambar' => 1, 'id_barang' => 1, 'nama_file' => 'barang_1_1_1775355202.jpg', 'urutan' => 1],
             ['id_gambar' => 2, 'id_barang' => 1, 'nama_file' => 'barang_1_2_1775355202.jpg', 'urutan' => 2],
             ['id_gambar' => 3, 'id_barang' => 1, 'nama_file' => 'barang_1_3_1775355202.jpg', 'urutan' => 3],
@@ -62,7 +62,7 @@ class DatabaseSeeder extends Seeder
             ['id_gambar' => 6, 'id_barang' => 2, 'nama_file' => 'barang_2_3_1775355819.jpg', 'urutan' => 3],
         ]);
 
-        DB::table('tb_lelang')->insert([
+        DB::table('tb_lelang')->insertOrIgnore([
             [
                 'id_lelang' => 1,
                 'id_barang' => 1,
@@ -74,7 +74,7 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
-        DB::table('history_lelang')->insert([
+        DB::table('history_lelang')->insertOrIgnore([
             ['id_history' => 1, 'id_lelang' => 1, 'id_barang' => 1, 'id_user' => 1, 'penawaran_harga' => 2000000],
         ]);
     }
