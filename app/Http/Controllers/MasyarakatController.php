@@ -192,6 +192,13 @@ class MasyarakatController extends Controller
 
     public function simpanPenawaran(Request $request)
     {
+        // Clean price format (remove thousand separators)
+        if ($request->filled('penawaran_harga')) {
+            $request->merge([
+                'penawaran_harga' => str_replace(['.', ','], '', $request->input('penawaran_harga'))
+            ]);
+        }
+
         $lelang = Lelang::with('barang')->where('id_lelang', $request->input('id_lelang'))->first();
 
         if (!$lelang || $lelang->status !== 'dibuka') {
@@ -213,6 +220,13 @@ class MasyarakatController extends Controller
 
     public function updatePenawaran(Request $request)
     {
+        // Clean price format (remove thousand separators)
+        if ($request->filled('penawaran_harga')) {
+            $request->merge([
+                'penawaran_harga' => str_replace(['.', ','], '', $request->input('penawaran_harga'))
+            ]);
+        }
+
         $id_history    = $request->input('id_history');
         $penawaran_baru = (int) $request->input('penawaran_harga');
 
