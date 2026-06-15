@@ -60,11 +60,13 @@
         </div>
         <div>
           <label class="form-label-m" style="font-size:.78rem">Harga Min (Rp)</label>
-          <input type="number" name="harga_min" class="form-control-m" placeholder="0" value="{{ $harga_min ?? '' }}" min="0">
+          <input type="hidden" name="harga_min" id="harga_min_raw" value="{{ $harga_min ?? '' }}">
+          <input type="text" class="form-control-m price-filter" data-raw-id="harga_min_raw" placeholder="0" value="{{ $harga_min ? number_format($harga_min, 0, ',', '.') : '' }}">
         </div>
         <div>
           <label class="form-label-m" style="font-size:.78rem">Harga Maks (Rp)</label>
-          <input type="number" name="harga_max" class="form-control-m" placeholder="Tak terbatas" value="{{ $harga_max ?? '' }}" min="0">
+          <input type="hidden" name="harga_max" id="harga_max_raw" value="{{ $harga_max ?? '' }}">
+          <input type="text" class="form-control-m price-filter" data-raw-id="harga_max_raw" placeholder="Tak terbatas" value="{{ $harga_max ? number_format($harga_max, 0, ',', '.') : '' }}">
         </div>
         <div style="display:flex;gap:.5rem">
           <button type="submit" class="btn-m btn-primary-m" style="white-space:nowrap"><i class="fas fa-search"></i> Cari</button>
@@ -452,8 +454,8 @@ setInterval(function(){
   fetch('/petugas/check-timer').catch(()=>{});
 }, 10000);
 
-// Thousand separator formatting for bid inputs
-document.querySelectorAll('.bid-input').forEach(function(input){
+// Thousand separator formatting for bid and filter inputs
+document.querySelectorAll('.bid-input, .price-filter').forEach(function(input){
   input.addEventListener('input', function(e){
     let val = e.target.value.replace(/\D/g, ''); // Remove non-digits
     let formatted = val ? parseInt(val).toLocaleString('id-ID') : '';
@@ -488,8 +490,10 @@ document.querySelectorAll('.bid-input').forEach(function(input){
       }
     }
   });
-  // Trigger on load for pre-filled values
-  input.dispatchEvent(new Event('input'));
+  // Trigger on load for pre-filled values (skip for price-filter to avoid issues with empty values)
+  if(!input.classList.contains('price-filter') || input.value) {
+    input.dispatchEvent(new Event('input'));
+  }
 });
 </script>
 @endpush

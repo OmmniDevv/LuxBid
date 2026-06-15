@@ -10,6 +10,9 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Seed categories first
+        $this->call(KategoriSeeder::class);
+
         DB::table('tb_level')->insert([
             ['id_level' => 1, 'level' => 'administrator'],
             ['id_level' => 2, 'level' => 'petugas'],
