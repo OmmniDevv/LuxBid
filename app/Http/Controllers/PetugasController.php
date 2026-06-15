@@ -68,6 +68,11 @@ class PetugasController extends Controller
             ]);
         }
 
+        // Convert empty kategori to null
+        if ($request->has('id_kategori') && $request->input('id_kategori') === '') {
+            $request->merge(['id_kategori' => null]);
+        }
+
         $request->validate([
             'nama_barang' => 'required|string|max:255',
             'tgl'         => 'required|date',
@@ -92,6 +97,11 @@ class PetugasController extends Controller
             $request->merge([
                 'harga_awal' => str_replace(['.', ','], '', $request->input('harga_awal'))
             ]);
+        }
+
+        // Convert empty kategori to null
+        if ($request->has('id_kategori') && $request->input('id_kategori') === '') {
+            $request->merge(['id_kategori' => null]);
         }
 
         $request->validate([
