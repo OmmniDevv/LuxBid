@@ -1,17 +1,32 @@
 name: luxbid
 
-# Scheduler configuration
+# Scheduler configuration (free tier supported)
 scheduler: true
+
+# Queue worker configuration (optimized for free tier)
+workers:
+  - name: default
+    connection: database
+    queue: default
+    processes: 1
+    max_time: 60
+    max_jobs: 100
+    max_tries: 3
+    memory: 128
 
 # Environments configuration
 environments:
   production:
     build:
-      - composer install --no-dev --optimize-autoloader
-      - npm ci && npm run build
+      - composer install --no-dev --optimize-autoloader --no-interaction
+      - npm ci --prefer-offline --no-audit
+      - npm run build
       - php artisan config:cache
       - php artisan route:cache
       - php artisan view:cache
-    
+      - php artisan event:cache
+
     deploy:
       - php artisan migrate --force
+      - php artisan storage:link
+      - php artisan queue:restart
